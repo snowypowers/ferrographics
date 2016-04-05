@@ -59,12 +59,6 @@ ClothSystem::ClothSystem(int l, int w, float distance):PendulumSystem()
 	addAnchor(0);
 	addAnchor(l-1);
 
-	for (unsigned z=0;z<m_vVecState.size();z+=2) {
-		printf("%d:",z);
-		m_vVecState[z].print();
-		m_vVecState[z+1].print();
-	}
-
 }
 
 Vector3f ClothSystem::getParticle(int l, int w) {
