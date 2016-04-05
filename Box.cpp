@@ -1,4 +1,5 @@
 #include "Box.h"
+#include <cmath>
 
 Box::Box() {
 	//Default side length of 1
@@ -20,6 +21,20 @@ Box::Box(float side, Vector3f c, Vector3f up, bool covered) {
 	m_covered = covered;
 	m_points = vector<Vector3f>();
 	cal();
+}
+
+//Check for collision with given particle
+bool Box::collide(Vector3f position, float radius) {
+	bool result = false;
+	Vector3f direction = Vector3f();
+	for (unsigned i=0; i<3;i++) {
+		if (abs((position - m_c).abs() - m_side/2) > radius) {
+			result = true;
+		}
+	}
+	if (!result) {
+		return false;
+	}
 }
 
 void Box::cal() {

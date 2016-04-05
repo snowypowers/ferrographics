@@ -19,6 +19,7 @@
 #include "simpleSystem.h"
 #include "pendulumSystem.h"
 #include "ClothSystem.h"
+#include "Box.h"
 
 using namespace std;
 
@@ -31,7 +32,7 @@ namespace
     TimeStepper * timeStepper = new RK4();
 	float h = 0.04f;
 	bool pause;
-
+	Box box = Box(2.0, Vector3f(), Vector3f(0,1,0), true);
   // initialize particle system
   void initSystem()
   {
@@ -66,7 +67,7 @@ namespace
     glutSolidSphere(0.1f,10.0f,10.0f);
     
     system->draw();
-    
+    box.draw();
     
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, floorColor);
     glPushMatrix();

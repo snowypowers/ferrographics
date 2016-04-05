@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <vecmath.h>
+#include "Box.h"
+#include "Particle.h"
 
 using namespace std;
 
@@ -37,6 +39,7 @@ protected:
 
 	vector<Vector3f> m_vVecState;
 	Vector3f m_forceField;
+	Box box;
 
 };
 
