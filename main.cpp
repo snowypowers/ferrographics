@@ -12,7 +12,7 @@
 #include <vecmath.h>
 #include "camera.h"
 
-///TODO: include more headers if necessary
+///include more headers if necessary
 #include <string>
 
 #include "TimeStepper.hpp"
@@ -26,61 +26,32 @@ using namespace std;
 namespace
 {
 
-    ParticleSystem * system[3];
-	int systemSelect = 2;
-    TimeStepper * timeStepper;
-	float h;
+    ParticleSystem * system;
+	//use RK4 as integrator
+    TimeStepper * timeStepper = new RK4();
+	float h = 0.04f;
 	bool pause;
 	bool wind;
 	Vector3f windf = Vector3f(0.0f,0.0f,-6.0f);
 
-  // initialize your particle systems
-  ///TODO: read argv here. set timestepper , step size etc
-  void initSystem(int argc, char * argv[])
+  // initialize particle system
+  void initSystem()
   {
     // seed the random number generator with the current time
     srand( time( NULL ) );
-    system[0] = new SimpleSystem();
-	system[1] = new PendulumSystem(4);
-	system[2] = new ClothSystem(6,6,0.5f);
-	//Setup Stepsize
-	if (argc >= 3) {
-		h = stof(argv[2]);
-	} else {
-		h = 0.04f;
-	}
-	
+	system = new ClothSystem(6,6,0.5f);
 
-	//Setup integrator
-	char* s;
-	if (argc >= 2) {
-		if (strcmp(argv[1],"e") == 0) {
-			timeStepper = new ForwardEuler();
-			s = "Euler";
-		} else if (strcmp(argv[1],"t") == 0) {
-			timeStepper = new Trapzoidal();
-			s = "Trapzoidal";
-		} else {
-			timeStepper = new RK4();
-			s = "RK4";
-		}
-	} else {
-		timeStepper = new RK4();
-		s = "RK4";
-	}
-	printf("Integrator: %s\n", s);
-	printf("Stepsize: %f", h);	
+	
   }
 
   // Take a step forward for the particle shower
-  ///TODO: Optional. modify this function to display various particle systems
   ///and switch between different timeSteppers
   void stepSystem()
   {
       ///TODO The stepsize should change according to commandline arguments
     //const float h = 0.04f;
     if(timeStepper!=0 && !pause){
-      timeStepper->takeStep(system[systemSelect],h);
+      timeStepper->takeStep(system,h);
     }
   }
 
@@ -96,7 +67,7 @@ namespace
     
     glutSolidSphere(0.1f,10.0f,10.0f);
     
-    system[systemSelect]->draw();
+    system->draw();
     
     
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, floorColor);
@@ -109,18 +80,10 @@ namespace
   }
 
   void resetSystem() {
-	  delete system[systemSelect];
-	  switch(systemSelect) {
-	  case 0: 
-		  system[systemSelect] = new SimpleSystem();
-		  break;
-	  case 1:
-		  system[systemSelect] = new PendulumSystem(4);
-		  break;
-	  case 2:
-		  system[systemSelect] = new ClothSystem(6,6,0.5f);
-		  break;
-	  }
+	delete system;
+	initSystem();
+
+
   }
         
 
@@ -149,15 +112,6 @@ namespace
     {
         switch ( key )
         {
-		case '1':
-			systemSelect = 0;
-			break;
-		case '2':
-			systemSelect = 1;
-			break;
-		case '3':
-			systemSelect = 2;
-			break;
 		case 'r':
 			resetSystem();
 			break;
@@ -166,25 +120,14 @@ namespace
 			break;
 		case 's':
 			if (timeStepper!=0 && pause) {
-				timeStepper->takeStep(system[systemSelect],h);
+				timeStepper->takeStep(system,h);
 			}
 			break;
-		case 'e':
-			if (systemSelect == 2 && !wind) {
-				printf("add wind\n");
-				wind = true;
-				system[systemSelect]->addForceField(wind);
-			} else if (systemSelect == 2 && wind) {
-				printf("remove wind\n");
-				system[systemSelect]->removeForceField(wind);
-				wind = false;
-			}
-			break;
-		case 'w':
-			if (system[systemSelect]->mesh) {
-				system[systemSelect]->mesh = false;
+		case 'm':
+			if (system->mesh) {
+				system->mesh = false;
 			} else {
-				system[systemSelect]->mesh = true;
+				system->mesh = true;
 			}
 			break;
         case 27: // Escape key
@@ -379,13 +322,13 @@ int main( int argc, char* argv[] )
     camera.SetDistance( 10 );
     camera.SetCenter( Vector3f::ZERO );
     
-    glutCreateWindow("Assignment 4");
+    glutCreateWindow("Ferro");
 
     // Initialize OpenGL parameters.
     initRendering();
 
     // Setup particle system
-    initSystem(argc,argv);
+    initSystem();
 
     // Set up callback functions for key presses
     glutKeyboardFunc(keyboardFunc); // Handles "normal" ascii symbols
