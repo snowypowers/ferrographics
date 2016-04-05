@@ -31,8 +31,6 @@ namespace
     TimeStepper * timeStepper = new RK4();
 	float h = 0.04f;
 	bool pause;
-	bool wind;
-	Vector3f windf = Vector3f(0.0f,0.0f,-6.0f);
 
   // initialize particle system
   void initSystem()

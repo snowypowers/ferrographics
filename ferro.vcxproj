@@ -91,6 +91,7 @@
     <ClCompile Include="vecmath\src\Vector4f.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Box.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="ClothSystem.h" />
     <ClInclude Include="particleSystem.h" />
