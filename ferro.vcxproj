@@ -74,6 +74,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Box.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="ClothSystem.cpp" />
     <ClCompile Include="main.cpp" />
@@ -94,6 +95,7 @@
     <ClInclude Include="Box.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="ClothSystem.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="particleSystem.h" />
     <ClInclude Include="pendulumSystem.h" />
     <ClInclude Include="simpleSystem.h" />

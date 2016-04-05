@@ -2,9 +2,15 @@
 #define BOX_H
 
 #include <vecmath.h>
+#include<vector>
 
-class Box
-{
+#ifdef _WIN32
+#include "GL/freeglut.h"
+#else
+#include <GL/glut.h>
+#endif
+
+using namespace std;
 /*
 Box implementation
 This is the hollow square box.
@@ -14,34 +20,30 @@ float l: length of side
 Vector3f c: Center of the box
 Vector3f up: Upward direction of the box
 bool top: True for closed box, False for box with open top
-
 */
+class Box
+{
 public:
 	//Default Constructor
 	Box();
 
 	//Constructor
-	Box(float side, Vector3f c, Vector3f up, bool top, Matrix4f rot) {
-	
-	
-	}
+	Box(float side, Vector3f c, Vector3f up, bool covered);
+
+	void draw();
+
+	void cal();
+
+	bool collide();
 
 protected:
 	float m_side;
 	Vector3f m_c;
 	Vector3f m_up;
-	bool m_top;
-	Matrix4f m_rot;
+	bool m_covered;
+	vector<Vector3f> m_points;
 
+	void drawQuad(Vector3f a, Vector3f b, Vector3f c, Vector3f d);
 
-
-
-
-
-
-
-
-
-
-}
+};
 #endif
