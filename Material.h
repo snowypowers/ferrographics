@@ -34,12 +34,19 @@ public:
 		return m_h;
 	};
 
+	float getRadius() {
+		return m_radius;
+	};
 	float getRestPressure() {
 		return m_restPressure;
 	};
 
 	float getK() {
 		return m_k;
+	};
+
+	float getViscosity() {
+		return m_viscosity;
 	};
 
 protected:
@@ -51,6 +58,7 @@ protected:
 	float m_h;
 	float m_restPressure;
 	float m_k;
+	float m_viscosity;
 
 };
 
@@ -59,6 +67,7 @@ public:
 	Water(float density, float vol, int particles, float h):Material(density, vol, particles, h) {
 		m_restPressure = 998.29;
 		m_k = 3;
+		m_viscosity = 3.5;
 	}
 };
 
