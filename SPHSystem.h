@@ -13,16 +13,19 @@
 #include "SpatialHash.h"
 #include "Material.h"
 #include "Weights.h"
+#include "Box.h"
 
 class SPHSystem: public ParticleSystem
 {
 public:
 	SPHSystem();
 	vector<Vector3f> evalF(vector<Vector3f> state);
+	void checkCollision();
 	void draw();
 
 
 protected:
+	Box box;
 	Material* m;
 	float m_mass;
 	SpatialHash* hash;

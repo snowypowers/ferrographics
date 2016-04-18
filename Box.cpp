@@ -24,13 +24,13 @@ Box::Box(float side, Vector3f c, Vector3f up, bool covered) {
 }
 
 //Check for collision with given particle
-bool Box::collide(Vector3f position, float radius) {
+bool Box::collide(Vector3f position) {
 	bool result = false;
 	Vector3f direction = Vector3f();
 	for (unsigned i=0; i<3;i++) {
-		if (abs((position - m_c).abs() - m_side/2) > radius) {
+		if ((position - m_c).abs() > m_side/2) {
 			result = true;
-			direction[i] = position[i] - m_c[i];
+			//direction[i] = position[i] - m_c[i];
 		}
 	}
 	if (!result) {
@@ -42,12 +42,12 @@ bool Box::collide(Vector3f position, float radius) {
 
 void Box::cal() {
 	m_points.clear();
-	Vector3f one = m_c + Vector3f(-m_side/2, m_side/2, -m_side/2);
-	Vector3f two = m_c + Vector3f(m_side/2, m_side/2, -m_side/2);
-	Vector3f three = m_c + Vector3f(m_side/2, m_side/2, m_side/2);
-	Vector3f four = m_c + Vector3f(-m_side/2, m_side/2, m_side/2);
-	Vector3f five = m_c + Vector3f(-m_side/2, -m_side/2, -m_side/2);
-	Vector3f six = m_c + Vector3f(m_side/2, -m_side/2, -m_side/2);
+	Vector3f one = m_c + Vector3f(-m_side/2, m_side/2, -m_side/2);	//x- y+ z-
+	Vector3f two = m_c + Vector3f(m_side/2, m_side/2, -m_side/2);	//x+ y+ z-
+	Vector3f three = m_c + Vector3f(m_side/2, m_side/2, m_side/2);	//x+ y+ z+
+	Vector3f four = m_c + Vector3f(-m_side/2, m_side/2, m_side/2);	//x- y+ z+
+	Vector3f five = m_c + Vector3f(-m_side/2, -m_side/2, -m_side/2);//x- y- z-
+	Vector3f six = m_c + Vector3f(m_side/2, -m_side/2, -m_side/2);	//x+ y- z-
 	Vector3f seven = m_c + Vector3f(m_side/2, -m_side/2, m_side/2);
 	Vector3f eight = m_c + Vector3f(-m_side/2, -m_side/2, m_side/2);
 

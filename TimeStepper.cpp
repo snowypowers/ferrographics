@@ -20,6 +20,7 @@ void ForwardEuler::takeStep(ParticleSystem* particleSystem, float stepSize)
 
 	vector<Vector3f> newX = stepForward(currentX, fx, stepSize);
 	particleSystem->setState(newX);
+	particleSystem->checkCollision();
 }
 
 ///TODO: implement Trapzoidal rule here
@@ -62,5 +63,6 @@ void RK4::takeStep(ParticleSystem* particleSystem, float stepSize)
 		currentX[i] += (stepSize / 6.0) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]);
 	}
 	particleSystem->setState(currentX);
+	particleSystem->checkCollision();
 
 }
