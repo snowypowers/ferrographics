@@ -4,7 +4,6 @@
 #include <vector>
 #include <vecmath.h>
 #include "Box.h"
-#include "Particle.h"
 
 using namespace std;
 
