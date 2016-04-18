@@ -30,10 +30,13 @@ bool Box::collide(Vector3f position, float radius) {
 	for (unsigned i=0; i<3;i++) {
 		if (abs((position - m_c).abs() - m_side/2) > radius) {
 			result = true;
+			direction[i] = position[i] - m_c[i];
 		}
 	}
 	if (!result) {
 		return false;
+	} else {
+
 	}
 }
 

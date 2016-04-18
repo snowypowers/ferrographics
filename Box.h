@@ -34,7 +34,7 @@ public:
 
 	void cal();
 
-	bool collide();
+	bool collide(Vector3f position, float radius);
 
 protected:
 	float m_side;
