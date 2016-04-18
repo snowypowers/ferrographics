@@ -81,6 +81,7 @@
     <ClCompile Include="particleSystem.cpp" />
     <ClCompile Include="pendulumSystem.cpp" />
     <ClCompile Include="simpleSystem.cpp" />
+    <ClCompile Include="SPHSystem.cpp" />
     <ClCompile Include="spring.cpp" />
     <ClCompile Include="TimeStepper.cpp" />
     <ClCompile Include="vecmath\src\Matrix2f.cpp" />
@@ -95,10 +96,14 @@
     <ClInclude Include="Box.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="ClothSystem.h" />
+    <ClInclude Include="HashNode.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="particleSystem.h" />
     <ClInclude Include="pendulumSystem.h" />
     <ClInclude Include="simpleSystem.h" />
+    <ClInclude Include="SpatialHash.h" />
+    <ClInclude Include="SPHSystem.h" />
     <ClInclude Include="Spring.h" />
     <ClInclude Include="TimeStepper.hpp" />
     <ClInclude Include="vecmath\include\Matrix2f.h" />
@@ -109,6 +114,7 @@
     <ClInclude Include="vecmath\include\Vector2f.h" />
     <ClInclude Include="vecmath\include\Vector3f.h" />
     <ClInclude Include="vecmath\include\Vector4f.h" />
+    <ClInclude Include="Weights.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
