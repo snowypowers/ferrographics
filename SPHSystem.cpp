@@ -57,14 +57,15 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 	for (i=0;i<p;i++) {
 		//compute internal forces for each particle
 		vector<int> neighbours = neighboursArray[i];
-		float pressureForce = 0;
+		Vector3f pressureForce = Vector3f();
+		Vector3f pi = pressureArray[i];
 		for (int j=0;j<neighbours.size();j++) {
 			int index = neighbours[j];
 			if (index == -1) {continue;}
-			//pressureForce += ;
+			Vector3f pj = pressureArray[index];
+			float mj = mass_densityArray[index];
+			pressureForce -= ( (pi + pj) / 2 ) * (mj / pj) * Weights::pressure(state[index*2], m->getH());
 
-
-			
 		}
 	}
 	//compute external forces

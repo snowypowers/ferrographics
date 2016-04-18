@@ -11,10 +11,13 @@ public:
 		return coeff * pow( h*h - r.absSquared(),3);
 	};
 
-	static float pressure(Vector3f r, float h) {
+	static Vector3f pressure(Vector3f r, float h) {
 		return (-45 / (PI * pow(h,6))) * (r / r.abs()) * pow( h - r.abs() ,2);
 	};
 
+	static Vector3f vis(Vector3f r, float h) {
+		return (45 / (PI * pow(h, 6))) * (h - r.abs());
+	};
 
 };
 #endif
