@@ -2,7 +2,6 @@
 
 SPHSystem::SPHSystem() :ParticleSystem(){
 	m = new Water(1000, 0.01, 500, 0.0457); 
-	printf("Created Material\n");
 	m_numParticles = 100;
 	for (int i=0;i<(m_numParticles*2);i++) {
 		if (i%2 == 0) {
@@ -13,8 +12,27 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 		
 	}
 	hash = new SpatialHash(100, 0.01);
-	printf("Created Hash\n");
+};
+
+SPHSystem::SPHSystem(Material* mat, int numParticles, bool empty):ParticleSystem() {
+	m = mat;
+	m_numParticles = numParticles;
+	if (!empty) {
+		for (int i=0;i<(m_numParticles*2);i++) {
+			if (i%2 == 0) {
+				m_vVecState.push_back(Vector3f(i/100,i/100,i/100));
+			} else {
+				m_vVecState.push_back(Vector3f());
+			}
+		}
+	}
+	hash = new SpatialHash(numParticles, 0.01);
 }
+
+void SPHSystem::addParticle(Vector3f pos, Vector3f velo) {
+	m_vVecState.push_back(pos);
+	m_vVecState.push_back(velo);
+};
 
 vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 	//printf("Start eval\n");
@@ -96,7 +114,7 @@ void SPHSystem::draw() {
 		Vector3f pos = m_vVecState[i*2];
 		glPushMatrix();
 		glTranslatef(pos[0], pos[1], pos[2] );
-		glutSolidSphere(r,10.0f,10.0f);
+		glutSolidSphere(r,5.0f,5.0f);
 		glPopMatrix();
 	}
 };
