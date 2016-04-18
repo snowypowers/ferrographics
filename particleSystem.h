@@ -26,6 +26,8 @@ public:
 	
 	virtual void draw() = 0;
 
+	virtual void checkCollision();
+
 	void addForceField(Vector3f f);
 
 	void removeForceField(Vector3f f);

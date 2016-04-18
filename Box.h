@@ -34,9 +34,12 @@ public:
 
 	void cal();
 
-	bool collide(Vector3f position, float radius);
+	bool collide(Vector3f position);
+
+	vector<Vector3f> getPoints(){return m_points};
 
 protected:
+	vector<Vector3f> m_points;
 	float m_side;
 	Vector3f m_c;
 	Vector3f m_up;

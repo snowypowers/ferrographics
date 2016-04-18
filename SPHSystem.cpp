@@ -27,6 +27,8 @@ SPHSystem::SPHSystem(Material* mat, int numParticles, bool empty):ParticleSystem
 		}
 	}
 	hash = new SpatialHash(numParticles, 0.01);
+	//Create box boundary
+	box = Box();
 }
 
 void SPHSystem::addParticle(Vector3f pos, Vector3f velo) {
@@ -107,6 +109,41 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 
 	
 };
+
+void SPHSystem::checkCollision(){
+	float wallDamping = -0.5f;
+	Vector3f pos, vel;
+	vector<Vector3f> newState;
+	for (int n=0; n<m_vVecState.size();n=n+2){
+		 pos = m_vVecState[n];
+		 vel = m_vVecState[n+1];
+		 vector<Vector3f> points = box.getPoints();
+		 if(box.collide(pos)){
+			 if(pos.x()<points[0].x()){ //Collide with 
+				 vel[0] = vel[0] * wallDamping;
+				 pos[0] = points[0].x();
+			 } else if (pos.x()>points[1].x()){
+				 vel[0] = vel[0] * wallDamping;
+				 pos[0] = points[1].x();
+			 } else if (pos.y()>points[3].y()){
+				 vel[1] = vel[1] * wallDamping;
+				 pos[1] = points[3].y();
+			 } else if (pos.y()<points[4].y()){
+				 vel[1] = vel[1] * wallDamping;
+				 pos[1] = points[4].y();
+			 } else if (pos.z()<points[1].z()){
+				 vel[2] = vel[2] * wallDamping;
+				 pos[2] = points[1].y();
+			 } else if (pos.z()>points[2].z()){
+				 vel[2] = vel[2] * wallDamping;
+				 pos[2] = points[2].y();
+			 } 
+		 }
+		 newState.push_back(pos);
+		 newState.push_back(vel);
+	}
+	this->setState(newState);
+}
 
 void SPHSystem::draw() {
 	float r = m->getRadius();
