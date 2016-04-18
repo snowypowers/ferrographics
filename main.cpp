@@ -19,6 +19,7 @@
 #include "simpleSystem.h"
 #include "pendulumSystem.h"
 #include "ClothSystem.h"
+#include "SPHSystem.h"
 #include "Box.h"
 
 using namespace std;
@@ -31,14 +32,15 @@ namespace
 	//use RK4 as integrator
     TimeStepper * timeStepper = new RK4();
 	float h = 0.04f;
-	bool pause;
+	bool pause = false;
 	Box box = Box(2.0, Vector3f(), Vector3f(0,1,0), true);
   // initialize particle system
   void initSystem()
   {
     // seed the random number generator with the current time
     srand( time( NULL ) );
-	system = new ClothSystem(6,6,0.5f);
+	system = new SPHSystem();
+	//system = new ClothSystem(6,6,0.5f);
 
 	
   }
@@ -66,7 +68,7 @@ namespace
     
     glutSolidSphere(0.1f,10.0f,10.0f);
     
-    system->draw();
+    //system->draw();
     box.draw();
     
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, floorColor);
@@ -115,7 +117,7 @@ namespace
 			resetSystem();
 			break;
 		case 'p':
-			pause = true;
+			if (pause) {pause = false;} else {pause = true;}
 			break;
 		case 's':
 			if (timeStepper!=0 && pause) {
