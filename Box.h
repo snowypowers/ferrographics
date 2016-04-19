@@ -34,9 +34,9 @@ public:
 
 	void cal();
 
-	bool collide(Vector3f position);
+	bool collide(Vector3f &position);
 
-	vector<Vector3f> getPoints(){return m_points};
+	void getPoints(float x[]);
 
 protected:
 	vector<Vector3f> m_points;
@@ -44,7 +44,6 @@ protected:
 	Vector3f m_c;
 	Vector3f m_up;
 	bool m_covered;
-	vector<Vector3f> m_points;
 
 	void drawQuad(Vector3f a, Vector3f b, Vector3f c, Vector3f d);
 

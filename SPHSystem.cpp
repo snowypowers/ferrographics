@@ -82,34 +82,38 @@ void SPHSystem::checkCollision(){
 	float wallDamping = -0.5f;
 	Vector3f pos, vel;
 	vector<Vector3f> newState;
+	float* points = new float[6];
+	box.getPoints(points);
 	for (int n=0; n<m_vVecState.size();n=n+2){
 		 pos = m_vVecState[n];
 		 vel = m_vVecState[n+1];
-		 vector<Vector3f> points = box.getPoints();
 		 if(box.collide(pos)){
-			 if(pos.x()<points[0].x()){ //Collide with 
+			 if(pos.x()<points[0]){
 				 vel[0] = vel[0] * wallDamping;
-				 pos[0] = points[0].x();
-			 } else if (pos.x()>points[1].x()){
+				 pos[0] = points[0];
+			 } else if (pos.x()>points[1]){
 				 vel[0] = vel[0] * wallDamping;
-				 pos[0] = points[1].x();
-			 } else if (pos.y()>points[3].y()){
+				 pos[0] = points[1];
+			 } 
+			 if (pos.y()>points[2]){
 				 vel[1] = vel[1] * wallDamping;
-				 pos[1] = points[3].y();
-			 } else if (pos.y()<points[4].y()){
+				 pos[1] = points[2];
+			 } else if (pos.y()<points[3]){
 				 vel[1] = vel[1] * wallDamping;
-				 pos[1] = points[4].y();
-			 } else if (pos.z()<points[1].z()){
+				 pos[1] = points[3];
+			 } 
+			 if (pos.z()<points[4]){
 				 vel[2] = vel[2] * wallDamping;
-				 pos[2] = points[1].y();
-			 } else if (pos.z()>points[2].z()){
+				 pos[2] = points[4];
+			 } else if (pos.z()>points[5]){
 				 vel[2] = vel[2] * wallDamping;
-				 pos[2] = points[2].y();
+				 pos[2] = points[5];
 			 } 
 		 }
 		 newState.push_back(pos);
 		 newState.push_back(vel);
 	}
+	delete[] points;
 	this->setState(newState);
 }
 
