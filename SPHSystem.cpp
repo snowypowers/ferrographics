@@ -137,14 +137,14 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		output.push_back(state[i*2 + 1]);
 		//Sum up all forces and put into output
 		Vector3f finalForce = (pressureForce + visForce + gravityForce) /mi;
-		printf("%d: neighbours: %d\n", i, neighbours.size());
+		/*printf("%d: neighbours: %d\n", i, neighbours.size());
 		state[i*2].print();
 		state[i*2 +1].print();
 		printf("FORCES:\n");
 		visForce.print();
 		pressureForce.print();
 		gravityForce.print();
-		finalForce.print();
+		finalForce.print();*/
 		output.push_back(finalForce);
 	}
 	return output;
@@ -153,7 +153,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 };
 
 void SPHSystem::checkCollision(){
-	float wallDamping = -0.1f;
+	float wallDamping = -0.5f;
 	Vector3f pos, vel;
 	vector<Vector3f> newState;
 	float* points = new float[6];
@@ -164,24 +164,24 @@ void SPHSystem::checkCollision(){
 		 vel = m_vVecState[n+1];
 			 if(pos.x()<points[0]){
 				 vel[0] = vel[0] * wallDamping;
-				 pos[0] = points[0];
+				 pos[0] = points[0] - (pos[0] - points[0]);
 			 } else if (pos.x()>points[1]){
 				 vel[0] = vel[0] * wallDamping;
-				 pos[0] = points[1];
+				 pos[0] = points[1] + (points[1] - pos[0]);
 			 } 
 			 if (pos.y()<points[2]){
 				 vel[1] = vel[1] * wallDamping;
-				 pos[1] = points[2];
+				 pos[1] = points[2] - (pos[1] - points[2]);
 			 } else if (pos.y()>points[3]){
 				 vel[1] = vel[1] * wallDamping;
-				 pos[1] = points[3];
+				 pos[1] = points[3] + (points[3] - pos[1]);
 			 } 
 			 if (pos.z()<points[4]){
 				 vel[2] = vel[2] * wallDamping;
-				 pos[2] = points[4];
+				 pos[2] = points[4] - (pos[2] - points[4]);
 			 } else if (pos.z()>points[5]){
 				 vel[2] = vel[2] * wallDamping;
-				 pos[2] = points[5];
+				 pos[2] = points[5] + (points[5] - pos[2]);
 			 } 
 		 
 		 newState.push_back(pos);
