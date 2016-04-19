@@ -24,20 +24,24 @@ Box::Box(float side, Vector3f c, Vector3f up, bool covered) {
 }
 
 //Check for collision with given particle
-bool Box::collide(Vector3f position) {
-	bool result = false;
-	Vector3f direction = Vector3f();
+bool Box::collide(Vector3f &position) {
 	for (unsigned i=0; i<3;i++) {
-		if ((position - m_c).abs() > m_side/2) {
-			result = true;
+		if (abs(position[i] - m_c[i]) > m_side/2) {
+			return true;
 			//direction[i] = position[i] - m_c[i];
 		}
 	}
-	if (!result) {
-		return false;
-	} else {
-		return true;
-	}
+	return false;
+}
+
+void Box::getPoints(float x[]){
+	//float points[6] = {m_points[0].x(),m_points[1].x(),m_points[3].y(),m_points[4].y(),m_points[3].z(),m_points[5].z()};
+	x[0] = m_points[2].x();	//x
+	x[1] = m_points[4].x();	//-x
+	x[2] = m_points[2].y();	//y
+	x[3] = m_points[4].y();	//-y
+	x[4] = m_points[2].z();	//z
+	x[5] = m_points[4].z();	//-z
 }
 
 void Box::cal() {

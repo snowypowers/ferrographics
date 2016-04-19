@@ -37,9 +37,10 @@ public:
 
 	void cal();
 
-	bool collide(Vector3f position);
+	bool collide(Vector3f &position);
 
-	vector<Vector3f> getPoints(){return m_points;};
+	void getPoints(float x[]);
+
 
 protected:
 	vector<Vector3f> m_points;

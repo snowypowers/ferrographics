@@ -151,7 +151,6 @@ void SPHSystem::checkCollision(){
 	vector<Vector3f> newState;
 	float* points = new float[6];
 	box.getPoints(points);
-	printf("%f %f %f %f %f %f", points[0], points[1], points[2], points[3], points[4], points[5]);
 	for (int n=0; n<m_vVecState.size();n=n+2){
 		 pos = m_vVecState[n];
 		 vel = m_vVecState[n+1];
