@@ -118,8 +118,8 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 			Vector3f diff = state[index*2] - state[i*2];
 			float pj = pressureArray[index];
 			float mj = mass_densityArray[index];
-			pressureForce -= ( (pi + pj) / 2 ) * (mj / pj) * Weights::pressure(diff, m->getH());
-			visForce += (state[index*2 + 1] - vi) * (mj / pj) * Weights::vis(diff, m->getH());
+			pressureForce -= ( (pi + pj) / 2 ) * (m->getMass() / mj) * Weights::pressure(diff, m->getH());
+			visForce += (state[index*2 + 1] - vi) * (m->getMass() / mj) * Weights::vis(diff, m->getH());
 		}
 		visForce  = visForce * m->getViscosity();
 		//External forces
