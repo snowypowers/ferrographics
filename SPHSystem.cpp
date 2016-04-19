@@ -65,7 +65,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 			//printf("%d %d\n",i,j);
 			if (i == j) {continue;}
 			if ((state[i*2] - state[j*2]).abs() < m->getH()) {
-				printf("Neighbour dist: %f\n", (state[i*2] - state[j*2]).abs());
+				//printf("Neighbour dist: %f\n", (state[i*2] - state[j*2]).abs());
 				neighbours.push_back(j);
 			}
 		}
@@ -88,7 +88,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		//printf("end neighbours\n");
 		//Calculate pressure using rest pressure
 		pressure = m ->getK() * ( mass_density - m->getRestPressure());
-		printf ("%d: neighbours: %d | mass_density: %f | pressure: %f\n", i, neighbours.size(), mass_density, pressure);
+		//printf ("%d: neighbours: %d | mass_density: %f | pressure: %f\n", i, neighbours.size(), mass_density, pressure);
 		//printf("Neighbours: %d\n", neighbours.size());
 		//printf("Neighbours: %d\n", neighboursArray.size());
 		//printf("%d\n", neighboursArray.max_size());
@@ -99,7 +99,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		pressureArray.push_back(pressure);
 		//printf("pushed pressure\n");
 	}
-	printf("find forces\n");
+	//printf("find forces\n");
 	for (i=0;i<m_numParticles;i++) {
 		//neighbours = hash->findNeighbours(i, 0.0457);
 		//compute internal forces for each particle
@@ -131,12 +131,12 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		//Push in velocity
 		output.push_back(state[i*2 + 1]);
 		Vector3f finalForce = (pressureForce + visForce + gravityForce) / mi;
-		printf("%d:\n", i);
-		state[i*2].print();
-		finalForce.print();
-		visForce.print();
-		pressureForce.print();
-		gravityForce.print();
+		//printf("%d:\n", i);
+		//state[i*2].print();
+		//finalForce.print();
+		//visForce.print();
+		//pressureForce.print();
+		//gravityForce.print();
 		output.push_back(finalForce);
 	}
 	printf("end eval");
