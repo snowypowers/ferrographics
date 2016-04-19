@@ -2,7 +2,7 @@
 
 SPHSystem::SPHSystem() :ParticleSystem(){
 	srand (0);
-	m = new Water(1000.0, 0.01, 500, 0.05); 
+	m = new Water(1000.0, 0.01, 500, 0.0657); 
 	m_numParticles = 500;
 	/*for (int i=0;i<500;i++) {
 		//m_vVecState.push_back(Vector3f(i/250.0, Weights::vis(Vector3f(i/250.0),1),0.0));
@@ -14,7 +14,7 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 		for (int j=0;j<5;j++) {
 			for (int k=0;k<10;k++) {
 				m_vVecState.push_back(Vector3f(i/10.0, j/10.0, k/10.0));
-				m_vVecState.push_back(Vector3f());
+				m_vVecState.push_back(Vector3f((float)( rand() % 100)/100.0, (float)( rand() % 100)/100.0, (float)( rand() % 100)/100.0));
 			}
 		}
 	}
@@ -63,7 +63,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 	//Calculate density and pressure for each particle
 	for (i=0;i<m_numParticles;++i) {
 			//printf("Start particle %d\n", i);
-		mass_density = m->getMass();
+		mass_density = m->getMass() * Weights::default(Vector3f(),m->getH());
 		pressure = 0;
 		//find all possible neighbours
 			//printf("Find neighbours  ");
@@ -73,7 +73,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		for (int j=0;j<m_numParticles;++j) {
 			//printf("%d %d\n",i,j);
 			if (i == j) {continue;}
-			if ((state[i*2] - state[j*2]).abs() < m->getH()) {
+			if ((state[i*2] - state[j*2]).abs() < m->getSupport()) {
 				//printf("Neighbour dist: %f\n", (state[i*2] - state[j*2]).abs());
 				neighbours.push_back(j);
 			}
@@ -82,22 +82,17 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		for (int j=0;j<neighbours.size();j++) {
 			//printf("get particle %d %d \n ",neighbours[j]*2, j);
 			Vector3f pos = state[neighbours[j]*2];
-				
-				//pos.print();
-			//If neighbour particle is within support radius of particle i
-			if ((pos - state[i*2]).abs() <= m->getH()) {
+			//pos.print();
+			//If neighbour particle is within H of particle i
+			if ((state[i*2] - pos).abs() <= m->getH()) {
 				Vector3f diff =  state[i*2] - pos;
 				mass_density += m->getMass() * Weights::default(diff,m->getH());
-			} else {
-			//Set invalid neighbour to -1
-				neighbours.erase(neighbours.begin() + j);
-				//neighbours[i] = -1;
 			}
 		}
 		//printf("end neighbours\n");
 		//Calculate pressure using rest pressure
 		pressure = m ->getK() * ( mass_density - m->getRestPressure());
-		printf ("%d: neighbours: %d | mass_density: %f | pressure: %f\n", i, neighbours.size(), mass_density, pressure);
+		//printf ("%d: neighbours: %d | mass_density: %f | pressure: %f\n", i, neighbours.size(), mass_density, pressure);
 		//printf("Neighbours: %d\n", neighbours.size());
 		//printf("Neighbours: %d\n", neighboursArray.size());
 		//printf("%d\n", neighboursArray.max_size());
@@ -125,11 +120,13 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		for (int j=0;j<neighbours.size();j++) {
 			int index = neighbours[j];
 			//if (index == -1) {continue;}
-			Vector3f diff = state[index*2] - state[i*2];
+			Vector3f diff = -state[index*2] + state[i*2];
 			float pj = pressureArray[index];
 			float mj = mass_densityArray[index];
-			pressureForce -= ( (pi + pj) / 2 ) * (m->getMass() / mj) * Weights::pressure(diff, m->getH());
-			visForce += (state[index*2 + 1] - vi) * (m->getMass() / mj) * Weights::vis(diff, m->getH());
+			if (diff.abs() < m->getH()) {
+				pressureForce -= ( (pi + pj) / 2 ) * (m->getMass() / mj) * Weights::pressure(diff, m->getH());
+				visForce += (state[index*2 + 1] - vi) * (m->getMass() / mj) * Weights::vis(diff, m->getH());
+			}
 		}
 		visForce  = visForce * m->getViscosity();
 		//External forces
@@ -139,15 +136,15 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		//Push in velocity
 		output.push_back(state[i*2 + 1]);
 		//Sum up all forces and put into output
-		Vector3f finalForce = (visForce + gravityForce) /mi;
-		/*printf("%d: neighbours: %d\n", i, neighbours.size());
+		Vector3f finalForce = (pressureForce + visForce + gravityForce) /mi;
+		printf("%d: neighbours: %d\n", i, neighbours.size());
 		state[i*2].print();
 		state[i*2 +1].print();
 		printf("FORCES:\n");
 		visForce.print();
 		pressureForce.print();
 		gravityForce.print();
-		finalForce.print();*/
+		finalForce.print();
 		output.push_back(finalForce);
 	}
 	return output;

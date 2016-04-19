@@ -49,6 +49,10 @@ public:
 		return m_viscosity;
 	};
 
+	float getSupport() {
+		return m_support;
+	};
+
 protected:
 	float m_mass;
 	float m_density;
@@ -59,15 +63,17 @@ protected:
 	float m_restPressure;
 	float m_k;
 	float m_viscosity;
+	float m_support;
 
 };
 
 class Water:public Material {
 public:
 	Water(float density, float vol, int particles, float h):Material(density, vol, particles, h) {
-		m_restPressure = 998.29;
+		m_restPressure = 1000.0f;
 		m_k = 3;
 		m_viscosity = 3.5;
+		m_support = 0.125;
 	}
 };
 
