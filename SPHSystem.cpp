@@ -5,7 +5,7 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 	m = new Water(1000.0, 0.01, 500, 0.05); 
 	m_numParticles = 500;
 	for (int i=0;i<500;i++) {
-		m_vVecState.push_back(Vector3f((float)( rand() % 10000)/10000.0,(float)(rand() % 10000)/1000000.0, (float)(rand() % 10000)/10000.0));
+		m_vVecState.push_back(Vector3f((float)( rand() % 10000)/10000.0,(float)(rand() % 10000)/10000.0, (float)(rand() % 10000)/10000.0));
 		m_vVecState.push_back(Vector3f((float)(rand()%10)/10 , (float)(rand()%10)/10  , (float)(rand()%10)/10 ));
 	}
 	hash = new SpatialHash(100, m->getH());
@@ -128,13 +128,13 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		//Sum up all forces and put into output
 		//Push in velocity
 		output.push_back(state[i*2 + 1]);
-		Vector3f finalForce = (pressureForce + visForce + gravityForce) / mi;
+		Vector3f finalForce = (pressureForce + visForce + gravityForce) / m->getMass();
 		printf("%d:\n", i);
 		state[i*2].print();
-		//finalForce.print();
+		finalForce.print();
 		visForce.print();
 		pressureForce.print();
-		//gravityForce.print();
+		gravityForce.print();
 		output.push_back(finalForce);
 	}
 	printf("end eval");
