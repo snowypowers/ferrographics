@@ -3,6 +3,7 @@
 
 #include <vecmath.h>
 #include<vector>
+#include "HashNode.h"
 
 #ifdef _WIN32
 #include "GL/freeglut.h"
@@ -30,13 +31,15 @@ public:
 	//Constructor
 	Box(float side, Vector3f c, Vector3f up, bool covered);
 
+	float getSide() {return m_side;}
+
 	void draw();
 
 	void cal();
 
 	bool collide(Vector3f position);
 
-	vector<Vector3f> getPoints(){return m_points};
+	vector<Vector3f> getPoints(){return m_points;};
 
 protected:
 	vector<Vector3f> m_points;
@@ -44,7 +47,6 @@ protected:
 	Vector3f m_c;
 	Vector3f m_up;
 	bool m_covered;
-	vector<Vector3f> m_points;
 
 	void drawQuad(Vector3f a, Vector3f b, Vector3f c, Vector3f d);
 

@@ -1,42 +1,46 @@
-template <typename K, typename V>
+#ifndef HASHNODE_H
+#define HASHNODE_H
+
 class HashNode {
 public:
-    HashNode(const K &key, const V &value) :
+    HashNode( int key,  int value) :
     key(key), value(value), next(NULL) {
-    }
+    };
 
-    K getKey() const {
+    int getKey() const {
         return key;
-    }
+    };
 
-    V getValue() const {
+    int getValue() const {
         return value;
-    }
+    };
 
-    void setValue(V value) {
+    void setValue(int value) {
         HashNode::value = value;
-    }
+    };
 
     HashNode *getNext() const {
         return next;
-    }
+    };
 
 	HashNode* getLast() {
 		HashNode* node = this;
-		while (node->getNext() != NULL) {
-			node = node->getNext();
+		while (node->next != NULL) {
+			node = node->next;
 		}
 		return node;
-	}
+	};
 
     void setNext(HashNode *next) {
         HashNode::next = next;
-    }
+    };
 
 private:
     // key-value pair
-    K key;
-    V value;
+    int key;
+    int value;
     // next bucket with the same key
     HashNode *next;
 };
+
+#endif

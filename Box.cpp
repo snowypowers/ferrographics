@@ -5,7 +5,7 @@ Box::Box() {
 	//Default side length of 1
 	m_side = 1.0f;
 	//Default center of (0,0,0)
-	m_c = Vector3f();
+	m_c = Vector3f(1,1,1);
 	//Default direction up in +y
 	m_up = Vector3f(0, 1, 0);
 	//Closed box
@@ -36,7 +36,7 @@ bool Box::collide(Vector3f position) {
 	if (!result) {
 		return false;
 	} else {
-
+		return true;
 	}
 }
 
@@ -61,7 +61,7 @@ void Box::cal() {
 	m_points.push_back(eight);
 
 
-}
+};
 
 void Box::draw() {
 	if (m_covered) {

@@ -76,11 +76,8 @@
   <ItemGroup>
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="camera.cpp" />
-    <ClCompile Include="ClothSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="particleSystem.cpp" />
-    <ClCompile Include="pendulumSystem.cpp" />
-    <ClCompile Include="simpleSystem.cpp" />
     <ClCompile Include="SPHSystem.cpp" />
     <ClCompile Include="spring.cpp" />
     <ClCompile Include="TimeStepper.cpp" />
@@ -95,13 +92,9 @@
   <ItemGroup>
     <ClInclude Include="Box.h" />
     <ClInclude Include="camera.h" />
-    <ClInclude Include="ClothSystem.h" />
     <ClInclude Include="HashNode.h" />
     <ClInclude Include="Material.h" />
-    <ClInclude Include="Particle.h" />
     <ClInclude Include="particleSystem.h" />
-    <ClInclude Include="pendulumSystem.h" />
-    <ClInclude Include="simpleSystem.h" />
     <ClInclude Include="SpatialHash.h" />
     <ClInclude Include="SPHSystem.h" />
     <ClInclude Include="Spring.h" />

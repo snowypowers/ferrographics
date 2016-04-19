@@ -16,9 +16,6 @@
 #include <string>
 
 #include "TimeStepper.hpp"
-#include "simpleSystem.h"
-#include "pendulumSystem.h"
-#include "ClothSystem.h"
 #include "SPHSystem.h"
 #include "Box.h"
 
@@ -28,21 +25,18 @@ using namespace std;
 namespace
 {
 
-    ParticleSystem * system;
+    SPHSystem * system;
 	//use RK4 as integrator
     TimeStepper * timeStepper = new RK4();
 	float h = 0.04f;
-	bool pause = false;
-	Box box = Box(2.0, Vector3f(), Vector3f(0,1,0), true);
+	bool pause = true;
+	bool boxDraw = false;
   // initialize particle system
   void initSystem()
   {
     // seed the random number generator with the current time
     srand( time( NULL ) );
 	system = new SPHSystem();
-	//system = new ClothSystem(6,6,0.5f);
-
-	
   }
 
   // Take a step forward for the particle shower
@@ -66,10 +60,10 @@ namespace
     
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, particleColor);
     
-    glutSolidSphere(0.1f,10.0f,10.0f);
+    //glutSolidSphere(0.1f,10.0f,10.0f);
     
-    //system->draw();
-    box.draw();
+    system->draw();
+	if (boxDraw) {system->getBox().draw();}
     
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, floorColor);
     glPushMatrix();
@@ -113,6 +107,9 @@ namespace
     {
         switch ( key )
         {
+		case 'b':
+			if (boxDraw) {boxDraw = false;} else {boxDraw = true;}
+			break;
 		case 'r':
 			resetSystem();
 			break;
@@ -136,7 +133,7 @@ namespace
             break;
         case ' ':
         {
-            Matrix4f eye = Matrix4f::identity();
+			Matrix4f eye = Matrix4f::identity();
             camera.SetRotation( eye );
             camera.SetCenter( Vector3f::ZERO );
             break;

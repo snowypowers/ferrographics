@@ -12,10 +12,12 @@ public:
 	};
 
 	static Vector3f pressure(Vector3f r, float h) {
+		if (r.abs() > h) {return Vector3f();}
 		return (-45 / (PI * pow(h,6))) * (r / r.abs()) * pow( h - r.abs() ,2);
 	};
 
-	static Vector3f vis(Vector3f r, float h) {
+	static float vis(Vector3f r, float h) {
+		if (r.abs() > h) {return 0.0f;}
 		return (45 / (PI * pow(h, 6))) * (h - r.abs());
 	};
 

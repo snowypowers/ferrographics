@@ -58,11 +58,14 @@ void RK4::takeStep(ParticleSystem* particleSystem, float stepSize)
 	x3 = stepForward(particleSystem->getState(), k3, stepSize);
 	k4 = particleSystem->evalF(x3);
 
-	
+	printf("sum all k\n");
 	for (unsigned i=0;i<k1.size();i++) {
 		currentX[i] += (stepSize / 6.0) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]);
 	}
+	printf("cleared\n");
 	particleSystem->setState(currentX);
+	printf("SET!\n");
 	particleSystem->checkCollision();
+	printf("END ONE TIME STEP\n");
 
 }
