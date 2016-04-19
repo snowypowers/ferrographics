@@ -1,17 +1,16 @@
 #include "SPHSystem.h"
 
 SPHSystem::SPHSystem() :ParticleSystem(){
-	m = new Water(1000, 500, 500, 0.9); 
-	m_numParticles = 100;
+	srand (0);
+	m = new Water(1000, 0.01, 500, 0.0457); 
+	m_numParticles = 500;
 	//m_vVecState = vector<Vector3f>(200);
-	for (int i=0;i<10;i++) {
-		for (int j=0;j<10;j++) {
-			m_vVecState.push_back(Vector3f(i,j,5));
-			m_vVecState.push_back(Vector3f());
-		}
+	for (int i=0;i<500;i++) {
+		m_vVecState.push_back(Vector3f((float)( rand() % 10000)/10000.0,(float)(rand() % 10000)/10000.0, (float)(rand() % 10000)/10000.0));
+		m_vVecState.push_back(Vector3f((float)(rand()%10)/10 , (float)(rand()%10)/10  , (float)(rand()%10)/10 ));
 	}
 	hash = new SpatialHash(100, 0.0457);
-	box = Box(10, Vector3f(5,5,5), Vector3f(0,1,0), true);
+	box = Box(1, Vector3f(0.5,0.5,0.5), Vector3f(0,1,0), true);
 };
 
 SPHSystem::SPHSystem(Material* mat, int numParticles, bool empty):ParticleSystem() {
@@ -47,9 +46,9 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 	//hash->overview();
 	//printf("Inserted Hash\n");
 
-	vector<vector<int>> neighboursArray = vector<vector<int>> (100);
-	vector<float> mass_densityArray = vector<float>(100);
-	vector<float> pressureArray = vector<float>(100);
+	vector<vector<int>> neighboursArray = vector<vector<int>> ();
+	vector<float> mass_densityArray = vector<float>();
+	vector<float> pressureArray = vector<float>();
 	vector<int> neighbours;
 	float mass_density, pressure;
 	//Calculate density and pressure for each particle
@@ -66,7 +65,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 			//printf("%d %d\n",i,j);
 			if (i == j) {continue;}
 			if ((state[i*2] - state[j*2]).abs() < m->getH()) {
-				//printf("Neighbour dist: %f\n", (state[i*2] - state[j*2]).abs());
+				printf("Neighbour dist: %f\n", (state[i*2] - state[j*2]).abs());
 				neighbours.push_back(j);
 			}
 		}
@@ -89,7 +88,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		//printf("end neighbours\n");
 		//Calculate pressure using rest pressure
 		pressure = m ->getK() * ( mass_density - m->getRestPressure());
-		printf ("%d: mass_density: %f | pressure: %f\n", i, mass_density, pressure);
+		printf ("%d: neighbours: %d | mass_density: %f | pressure: %f\n", i, neighbours.size(), mass_density, pressure);
 		//printf("Neighbours: %d\n", neighbours.size());
 		//printf("Neighbours: %d\n", neighboursArray.size());
 		//printf("%d\n", neighboursArray.max_size());
@@ -107,29 +106,37 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		vector<int> neighbours = neighboursArray[i];
 		Vector3f pressureForce = Vector3f();
 		Vector3f visForce = Vector3f();
-		Vector3f pi = pressureArray[i];
-		Vector3f mi = mass_densityArray[i];
+		float pi = pressureArray[i];
+		float mi = mass_densityArray[i];
 		Vector3f vi = state[i*2 + 1];
+
+		//pi.print();
+		//mi.print();
+		//vi.print();
 		for (int j=0;j<neighbours.size();j++) {
 			int index = neighbours[j];
 			if (index == -1) {continue;}
 			if (index == i) {continue;}
 			Vector3f diff = state[i*2] - state[index*2];
-			Vector3f pj = pressureArray[index];
+			float pj = pressureArray[index];
 			float mj = mass_densityArray[index];
 			pressureForce -= ( (pi + pj) / 2 ) * (mj / pj) * Weights::pressure(diff, m->getH());
 			visForce += (state[index*2 + 1] - vi) * (mj / pj) * Weights::vis(diff, m->getH());
 		}
 		visForce  = visForce * m->getViscosity();
 		//External forces
-		Vector3f gravityForce = mi * 9.81;
+		Vector3f gravityForce = Vector3f(0, mi * -9.81, 0);
 
 		//Sum up all forces and put into output
 		//Push in velocity
 		output.push_back(state[i*2 + 1]);
 		Vector3f finalForce = (pressureForce + visForce + gravityForce) / mi;
-		printf("%d: ", i);
+		printf("%d:\n", i);
+		state[i*2].print();
 		finalForce.print();
+		visForce.print();
+		pressureForce.print();
+		gravityForce.print();
 		output.push_back(finalForce);
 	}
 	printf("end eval");
@@ -139,39 +146,42 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 };
 
 void SPHSystem::checkCollision(){
-	float wallDamping = -0.5f;
+	float wallDamping = -0.1f;
 	Vector3f pos, vel;
-	vector<Vector3f> newState = vector<Vector3f>();
+	vector<Vector3f> newState;
+	float* points = new float[6];
+	box.getPoints(points);
+	printf("%f %f %f %f %f %f", points[0], points[1], points[2], points[3], points[4], points[5]);
 	for (int n=0; n<m_vVecState.size();n=n+2){
 		 pos = m_vVecState[n];
 		 vel = m_vVecState[n+1];
-		 //pos.print();
-		 //vel.print();
-		 vector<Vector3f> points = box.getPoints();
 		 if(box.collide(pos)){
-			 if(pos.x()<points[0].x()){ //Collide with 
+			 if(pos.x()<points[0]){
 				 vel[0] = vel[0] * wallDamping;
-				 pos[0] = points[0].x();
-			 } else if (pos.x()>points[1].x()){
+				 pos[0] = points[0];
+			 } else if (pos.x()>points[1]){
 				 vel[0] = vel[0] * wallDamping;
-				 pos[0] = points[1].x();
-			 } else if (pos.y()>points[3].y()){
+				 pos[0] = points[1];
+			 } 
+			 if (pos.y()>points[2]){
 				 vel[1] = vel[1] * wallDamping;
-				 pos[1] = points[3].y();
-			 } else if (pos.y()<points[4].y()){
+				 pos[1] = points[2];
+			 } else if (pos.y()<points[3]){
 				 vel[1] = vel[1] * wallDamping;
-				 pos[1] = points[4].y();
-			 } else if (pos.z()<points[1].z()){
+				 pos[1] = points[3];
+			 } 
+			 if (pos.z()<points[4]){
 				 vel[2] = vel[2] * wallDamping;
-				 pos[2] = points[1].y();
-			 } else if (pos.z()>points[2].z()){
+				 pos[2] = points[4];
+			 } else if (pos.z()>points[5]){
 				 vel[2] = vel[2] * wallDamping;
-				 pos[2] = points[2].y();
+				 pos[2] = points[5];
 			 } 
 		 }
 		 newState.push_back(pos);
 		 newState.push_back(vel);
 	}
+	delete[] points;
 	this->setState(newState);
 }
 
@@ -179,7 +189,13 @@ void SPHSystem::draw() {
 	float r = m->getRadius();
 	for (int i=0;i<m_vVecState.size();i+=2) {
 		Vector3f pos = m_vVecState[i];
+		Vector3f vel = m_vVecState[i+1];
+		Vector3f col;
+		if(vel.abs() > 10) { col = Vector3f(1,0,0);}
+		else if (vel.abs() > 5) {col = Vector3f(0.5,0,0);}
+		else {col = Vector3f(0,0,0.5);}
 		glPushMatrix();
+		glColor3f(col[0], col[1], col[2]);
 		glTranslatef(pos[0], pos[1], pos[2] );
 		glutSolidSphere(r,5.0f,5.0f);
 		glPopMatrix();
