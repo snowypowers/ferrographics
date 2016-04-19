@@ -2,8 +2,8 @@
 
 SPHSystem::SPHSystem() :ParticleSystem(){
 	srand (0);
-	m = new Water(1000.0, 0.01, 500, 0.0657); 
-	m_numParticles = 500;
+	m = new Water(1000.0, 0.02, 1000, 0.0625); 
+	m_numParticles = 1000;
 	/*for (int i=0;i<500;i++) {
 		//m_vVecState.push_back(Vector3f(i/250.0, Weights::vis(Vector3f(i/250.0),1),0.0));
 		//m_vVecState.push_back(Vector3f());
@@ -11,7 +11,7 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 		//m_vVecState.push_back(Vector3f((float)(rand()%100)/100 , (float)(rand()%100)/100  , (float)(rand()%100)/100 ));
 	}*/
 	for (int i=0;i<10;i++) {
-		for (int j=0;j<5;j++) {
+		for (int j=0;j<10;j++) {
 			for (int k=0;k<10;k++) {
 				m_vVecState.push_back(Vector3f(i/10.0, j/10.0, k/10.0));
 				m_vVecState.push_back(Vector3f((float)( rand() % 100)/100.0, (float)( rand() % 100)/100.0, (float)( rand() % 100)/100.0));
@@ -19,7 +19,7 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 		}
 	}
 	hash = new SpatialHash(100, m->getH());
-	box = Box(1, Vector3f(0.5,0.5,0.5), Vector3f(0,1,0), true);
+	box = Box(2, Vector3f(0,0,0), Vector3f(0,1,0), true);
 };
 
 SPHSystem::SPHSystem(Material* mat, int numParticles, bool empty):ParticleSystem() {
@@ -73,7 +73,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		for (int j=0;j<m_numParticles;++j) {
 			//printf("%d %d\n",i,j);
 			if (i == j) {continue;}
-			if ((state[i*2] - state[j*2]).abs() < m->getSupport()) {
+			if ((state[i*2] - state[j*2]).abs() <= m->getSupport()) {
 				//printf("Neighbour dist: %f\n", (state[i*2] - state[j*2]).abs());
 				neighbours.push_back(j);
 			}
@@ -84,7 +84,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 			Vector3f pos = state[neighbours[j]*2];
 			//pos.print();
 			//If neighbour particle is within H of particle i
-			if ((state[i*2] - pos).abs() <= m->getH()) {
+			if ((state[i*2] - pos).abs() < m->getH()) {
 				Vector3f diff =  state[i*2] - pos;
 				mass_density += m->getMass() * Weights::default(diff,m->getH());
 			}
@@ -112,7 +112,10 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		Vector3f visForce = Vector3f();
 		float pi = pressureArray[i];
 		float mi = mass_densityArray[i];
+		float color = (m->getMass() / mi) * Weights::default2(Vector3f(), m->getH());;
 		Vector3f vi = state[i*2 + 1];
+		Vector3f normal = (m->getMass() / mi) * Weights::default1(Vector3f(), m->getH());
+		Vector3f surfaceTension = Vector3f();
 
 		//pi.print();
 		//mi.print();
@@ -120,15 +123,20 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		for (int j=0;j<neighbours.size();j++) {
 			int index = neighbours[j];
 			//if (index == -1) {continue;}
-			Vector3f diff = -state[index*2] + state[i*2];
+			Vector3f diff = state[i*2] - state[index*2];
 			float pj = pressureArray[index];
 			float mj = mass_densityArray[index];
 			if (diff.abs() < m->getH()) {
 				pressureForce -= ( (pi + pj) / 2 ) * (m->getMass() / mj) * Weights::pressure(diff, m->getH());
 				visForce += (state[index*2 + 1] - vi) * (m->getMass() / mj) * Weights::vis(diff, m->getH());
+				color += (m->getMass() / mj) * Weights::default2(diff, m->getH());
+				normal += (m->getMass() / mj) * Weights::default1(diff, m->getH());
 			}
 		}
 		visForce  = visForce * m->getViscosity();
+		if (normal.abs() > 7.0f) {
+			surfaceTension = normal.normalized() * -1.0f * color * m->getSurfaceTension();
+		}
 		//External forces
 		Vector3f gravityForce = Vector3f(0, mi * -9.81, 0);
 
@@ -136,7 +144,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		//Push in velocity
 		output.push_back(state[i*2 + 1]);
 		//Sum up all forces and put into output
-		Vector3f finalForce = (pressureForce + visForce + gravityForce) /mi;
+		Vector3f finalForce = (surfaceTension + pressureForce + visForce + gravityForce) / mi;
 		/*printf("%d: neighbours: %d\n", i, neighbours.size());
 		state[i*2].print();
 		state[i*2 +1].print();
