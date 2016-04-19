@@ -4,9 +4,19 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 	srand (0);
 	m = new Water(1000.0, 0.01, 500, 0.05); 
 	m_numParticles = 500;
-	for (int i=0;i<500;i++) {
-		m_vVecState.push_back(Vector3f((float)( rand() % 10000)/10000.0,(float)(rand() % 10000)/10000.0, (float)(rand() % 10000)/10000.0));
-		m_vVecState.push_back(Vector3f((float)(rand()%10)/10 , (float)(rand()%10)/10  , (float)(rand()%10)/10 ));
+	/*for (int i=0;i<500;i++) {
+		//m_vVecState.push_back(Vector3f(i/250.0, Weights::vis(Vector3f(i/250.0),1),0.0));
+		//m_vVecState.push_back(Vector3f());
+		//m_vVecState.push_back(Vector3f((float)( rand() % 10000)/10000.0,(float)(rand() % 10000)/10000.0, (float)(rand() % 10000)/10000.0));
+		//m_vVecState.push_back(Vector3f((float)(rand()%100)/100 , (float)(rand()%100)/100  , (float)(rand()%100)/100 ));
+	}*/
+	for (int i=0;i<10;i++) {
+		for (int j=0;j<5;j++) {
+			for (int k=0;k<10;k++) {
+				m_vVecState.push_back(Vector3f(i/10.0, j/10.0, k/10.0));
+				m_vVecState.push_back(Vector3f());
+			}
+		}
 	}
 	hash = new SpatialHash(100, m->getH());
 	box = Box(1, Vector3f(0.5,0.5,0.5), Vector3f(0,1,0), true);
@@ -114,7 +124,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		//vi.print();
 		for (int j=0;j<neighbours.size();j++) {
 			int index = neighbours[j];
-			if (index == -1) {continue;}
+			//if (index == -1) {continue;}
 			Vector3f diff = state[index*2] - state[i*2];
 			float pj = pressureArray[index];
 			float mj = mass_densityArray[index];
@@ -125,26 +135,28 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		//External forces
 		Vector3f gravityForce = Vector3f(0, mi * -9.81, 0);
 
-		//Sum up all forces and put into output
+		
 		//Push in velocity
 		output.push_back(state[i*2 + 1]);
-		Vector3f finalForce = (pressureForce + visForce + gravityForce) / m->getMass();
-		printf("%d:\n", i);
+		//Sum up all forces and put into output
+		Vector3f finalForce = (visForce + gravityForce) /mi;
+		/*printf("%d: neighbours: %d\n", i, neighbours.size());
 		state[i*2].print();
-		finalForce.print();
+		state[i*2 +1].print();
+		printf("FORCES:\n");
 		visForce.print();
 		pressureForce.print();
 		gravityForce.print();
+		finalForce.print();*/
 		output.push_back(finalForce);
 	}
-	printf("end eval");
 	return output;
 
 	
 };
 
 void SPHSystem::checkCollision(){
-	float wallDamping = -0.0f;
+	float wallDamping = -0.1f;
 	Vector3f pos, vel;
 	vector<Vector3f> newState;
 	float* points = new float[6];
@@ -187,6 +199,9 @@ void SPHSystem::draw() {
 	for (int i=0;i<m_vVecState.size();i+=2) {
 		Vector3f pos = m_vVecState[i];
 		Vector3f vel = m_vVecState[i+1];
+		GLfloat col [] = {0.7, 0.7, 0.7, 1.0};
+		if (vel.abs() > 10) {col[0] += 0.7;}
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, col);
 		glPushMatrix();
 		glTranslatef(pos[0], pos[1], pos[2] );
 		glutSolidSphere(r,5.0f,5.0f);
