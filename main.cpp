@@ -27,8 +27,8 @@ namespace
 
     SPHSystem * system;
 	//use RK4 as integrator
-    TimeStepper * timeStepper = new RK4();
-	float h = 0.04f;
+    TimeStepper * timeStepper = new ForwardEuler();
+	float h = 0.01f;
 	bool pause = true;
 	bool boxDraw = false;
   // initialize particle system

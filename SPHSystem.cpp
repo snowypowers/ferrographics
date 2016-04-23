@@ -2,24 +2,25 @@
 
 SPHSystem::SPHSystem() :ParticleSystem(){
 	srand (0);
-	m = new Water(1000.0, 0.02, 1000, 0.0625); 
-	m_numParticles = 1000;
+	m = new Water(1000.0, 0.04, 2000, 0.05); 
+	m_numParticles = 2000;
 	/*for (int i=0;i<500;i++) {
 		//m_vVecState.push_back(Vector3f(i/250.0, Weights::vis(Vector3f(i/250.0),1),0.0));
 		//m_vVecState.push_back(Vector3f());
 		//m_vVecState.push_back(Vector3f((float)( rand() % 10000)/10000.0,(float)(rand() % 10000)/10000.0, (float)(rand() % 10000)/10000.0));
 		//m_vVecState.push_back(Vector3f((float)(rand()%100)/100 , (float)(rand()%100)/100  , (float)(rand()%100)/100 ));
 	}*/
-	for (int i=0;i<10;i++) {
+	for (int i=0;i<20;i++) {
 		for (int j=0;j<10;j++) {
 			for (int k=0;k<10;k++) {
-				m_vVecState.push_back(Vector3f(i/10.0, j/10.0, k/10.0));
+				m_vVecState.push_back(Vector3f(i/20.0, j/10.0, k/20.0));
+				//m_vVecState.push_back(Vector3f());
 				m_vVecState.push_back(Vector3f((float)( rand() % 100)/100.0, (float)( rand() % 100)/100.0, (float)( rand() % 100)/100.0));
 			}
 		}
 	}
 	hash = new SpatialHash(100, m->getH());
-	box = Box(2, Vector3f(0,0,0), Vector3f(0,1,0), true);
+	box = Box(1, Vector3f(0.5,0.5,0.5), Vector3f(0,1,0), true);
 };
 
 SPHSystem::SPHSystem(Material* mat, int numParticles, bool empty):ParticleSystem() {
@@ -84,7 +85,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 			Vector3f pos = state[neighbours[j]*2];
 			//pos.print();
 			//If neighbour particle is within H of particle i
-			if ((state[i*2] - pos).abs() < m->getH()) {
+			if ((state[i*2] - pos).absSquared() < m->getH()*m->getH()) {
 				Vector3f diff =  state[i*2] - pos;
 				mass_density += m->getMass() * Weights::default(diff,m->getH());
 			}
@@ -161,7 +162,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 };
 
 void SPHSystem::checkCollision(){
-	float wallDamping = -0.5f;
+	float wallDamping = -0.7f;
 	Vector3f pos, vel;
 	vector<Vector3f> newState;
 	float* points = new float[6];

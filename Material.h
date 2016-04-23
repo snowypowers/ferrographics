@@ -79,8 +79,8 @@ public:
 	Water(float density, float vol, int particles, float h):Material(density, vol, particles, h) {
 		m_restPressure = 1000.0f;
 		m_k = 3.5f;
-		m_viscosity = 3.5f;
-		m_support = 0.125f;
+		m_viscosity = 4.5f;
+		m_support = 0.175f;
 		m_surfaceTension = 0.07f;
 	}
 };
