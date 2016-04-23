@@ -23,6 +23,17 @@ void ForwardEuler::takeStep(ParticleSystem* particleSystem, float stepSize)
 	particleSystem->checkCollision();
 }
 
+void LeapFrog::takeStep(ParticleSystem* particleSystem, float stepSize)
+{
+	
+	vector<Vector3f> currentX = particleSystem->getState();
+	vector<Vector3f> fx = particleSystem->evalF(currentX);
+
+	vector<Vector3f> newX = stepForward(currentX, fx, stepSize);
+	particleSystem->setState(newX);
+	particleSystem->checkCollision();
+}
+
 ///TODO: implement Trapzoidal rule here
 void Trapzoidal::takeStep(ParticleSystem* particleSystem, float stepSize)
 {

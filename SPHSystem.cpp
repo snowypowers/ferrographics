@@ -21,7 +21,18 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 	}
 	hash = new SpatialHash(100, m->getH());
 	box = Box(1, Vector3f(0.5,0.5,0.5), Vector3f(0,1,0), true);
+	
+	//Intialise Bins, Cell Size = h*2
+	float* points = new float[6];
+	box.getPoints(points);
+	cellsPerSide  =(int) ceil(box.getSide()/m->getH()*2);
+	bins = vector<vector<int>>();
+	for(int i=0; i<cellsPerSide*cellsPerSide*cellsPerSide;i++){
+		bins.push_back(vector<int>());
+	}
 };
+
+
 
 SPHSystem::SPHSystem(Material* mat, int numParticles, bool empty):ParticleSystem() {
 	m = mat;

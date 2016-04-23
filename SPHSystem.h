@@ -28,6 +28,8 @@ public:
 
 
 protected:
+	vector<vector<int>> bins;
+	int cellsPerSide;
 	Box box;
 	Material* m;
 	SpatialHash* hash;

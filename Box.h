@@ -17,7 +17,7 @@ Box implementation
 This is the hollow square box.
 
 @params
-float l: length of side
+float side: length of side
 Vector3f c: Center of the box
 Vector3f up: Upward direction of the box
 bool top: True for closed box, False for box with open top
