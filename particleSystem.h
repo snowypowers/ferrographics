@@ -4,6 +4,7 @@
 #include <vector>
 #include <vecmath.h>
 #include "Box.h"
+#include "ForceSphere.h"
 
 using namespace std;
 
@@ -35,12 +36,16 @@ public:
 	void print();
 	
 	bool mesh;
+
+	ForceSphere* getForceSphere() {return &fsphere;}
+	Box getBox() {return box;}
 	
 protected:
 
 	vector<Vector3f> m_vVecState;
 	Vector3f m_forceField;
 	Box box;
+	ForceSphere fsphere;
 
 };
 

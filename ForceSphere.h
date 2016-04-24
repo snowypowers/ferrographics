@@ -31,15 +31,21 @@ public:
 	~ForceSphere(void);
 	void draw();
 	bool intersect(Vector3f point); //Point in world coordinates
-	
 
+	Vector3f polarize(Vector3f position);
+
+	void move(Vector3f translate);
+	bool getSolid();
+	void setSolid(bool solid);
+	
+	
 protected:
 	Vector3f m_center;
 	float m_radius;
 	float m_amplitude;
 	int m_peaks;
-
-	bool solid;
+	bool m_solid;
+	
 };
 #endif
 

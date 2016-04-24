@@ -23,6 +23,7 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 	printf("Support: %f\n", m->getSupport());
 	hash = new SpatialHash(100, m->getH());
 	box = Box(0.5, Vector3f(0.25,0.25,0.25), Vector3f(0,1,0), true);
+	fsphere = ForceSphere(Vector3f(0,0,0),0.5, 0.2,3);
 	
 	//Intialise Bins, Cell Size = h*2
 	float* points = new float[6];
@@ -52,6 +53,7 @@ SPHSystem::SPHSystem(Material* mat, int numParticles, bool empty):ParticleSystem
 	hash = new SpatialHash(numParticles, 0.01);
 	//Create box boundary
 	box = Box();
+	fsphere = ForceSphere();
 }
 
 void SPHSystem::addParticle(Vector3f pos, Vector3f velo) {
@@ -154,12 +156,15 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		}
 		//External forces
 		Vector3f gravityForce = Vector3f(0, mi * -9.81, 0);
-
-		
+		Vector3f magneticForce = Vector3f();
+		Vector3f pos = state[i*2];
+		if(this->getForceSphere()->intersect(pos)){
+			magneticForce+=this->getForceSphere()->polarize(pos);
+		}
 		//Push in velocity
 		output.push_back(state[i*2 + 1]);
 		//Sum up all forces and put into output
-		Vector3f finalForce = (surfaceTension + pressureForce + visForce + gravityForce) / mi;
+		Vector3f finalForce = (surfaceTension + pressureForce + visForce + gravityForce + magneticForce) / mi;
 		/*printf("%d: neighbours: %d\n", i, neighbours.size());
 		state[i*2].print();
 		state[i*2 +1].print();
@@ -167,6 +172,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		visForce.print();
 		pressureForce.print();
 		gravityForce.print();
+		magneticForce.print();
 		finalForce.print();*/
 		output.push_back(finalForce);
 	}
@@ -220,7 +226,9 @@ void SPHSystem::draw() {
 		Vector3f pos = m_vVecState[i];
 		Vector3f vel = m_vVecState[i+1];
 		GLfloat col [] = {0.7, 0.7, 0.7, 1.0};
+		GLfloat col_in [] = {0.7, 0.7, 0.7, 1.0};
 		if (vel.abs() > 10) {col[0] += 0.7;}
+		if (this->getForceSphere()->intersect(pos)) {col[1] += 0.7;}
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, col);
 		glPushMatrix();
 		glTranslatef(pos[0], pos[1], pos[2] );

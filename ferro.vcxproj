@@ -76,6 +76,7 @@
   <ItemGroup>
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="ForceSphere.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="particleSystem.cpp" />
     <ClCompile Include="SPHSystem.cpp" />
@@ -92,6 +93,7 @@
   <ItemGroup>
     <ClInclude Include="Box.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="ForceSphere.h" />
     <ClInclude Include="HashNode.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="particleSystem.h" />

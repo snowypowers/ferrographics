@@ -24,13 +24,12 @@ public:
 	vector<Vector3f> evalF(vector<Vector3f> state);
 	void checkCollision();
 	void draw();
-	Box getBox() {return box;}
+	
 
 
 protected:
 	vector<vector<int>> bins;
 	int cellsPerSide;
-	Box box;
 	Material* m;
 	SpatialHash* hash;
 
