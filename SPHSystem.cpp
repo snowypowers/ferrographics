@@ -13,14 +13,16 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 	for (int i=0;i<20;i++) {
 		for (int j=0;j<10;j++) {
 			for (int k=0;k<10;k++) {
-				m_vVecState.push_back(Vector3f(i/20.0, j/10.0, k/20.0));
+				m_vVecState.push_back(Vector3f(i/40.0, j/20.0, k/20.0));
 				//m_vVecState.push_back(Vector3f());
-				m_vVecState.push_back(Vector3f((float)( rand() % 100)/100.0, (float)( rand() % 100)/100.0, (float)( rand() % 100)/100.0));
+				m_vVecState.push_back(Vector3f((float)( rand() % 100)/1000.0, -(float)( rand() % 100)/1000.0, (float)( rand() % 100)/1000.0));
 			}
 		}
 	}
+	printf("Properties: \nMass %f\n", m->getMass());
+	printf("Support: %f\n", m->getSupport());
 	hash = new SpatialHash(100, m->getH());
-	box = Box(1, Vector3f(0.5,0.5,0.5), Vector3f(0,1,0), true);
+	box = Box(0.5, Vector3f(0.25,0.25,0.25), Vector3f(0,1,0), true);
 	
 	//Intialise Bins, Cell Size = h*2
 	float* points = new float[6];
@@ -30,6 +32,7 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 	for(int i=0; i<cellsPerSide*cellsPerSide*cellsPerSide;i++){
 		bins.push_back(vector<int>());
 	}
+	
 };
 
 
@@ -173,7 +176,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 };
 
 void SPHSystem::checkCollision(){
-	float wallDamping = -0.7f;
+	float wallDamping = -0.5f;
 	Vector3f pos, vel;
 	vector<Vector3f> newState;
 	float* points = new float[6];

@@ -9,11 +9,12 @@ public:
 			m_density = density;
 			m_volume = vol;
 			m_particles = particles;
-			m_mass = 0.02f;
-			//m_mass = density * (vol / particles);
+			//m_mass = 0.02f;
+			m_mass = density * (vol / particles);
 			m_radius = 0.01f;
 			//m_radius = pow((float) ((3.0f * m_mass) / (4.0f * PI * m_density)), (float) (1.0/3.0));
 			m_h = h;
+			m_support = pow((float) ((3.0f * vol * 20.0f) / (4.0f * PI * particles))  , 1/3.0f);
 	};
 
 	float getMass() {
@@ -79,8 +80,8 @@ public:
 	Water(float density, float vol, int particles, float h):Material(density, vol, particles, h) {
 		m_restPressure = 1000.0f;
 		m_k = 3.5f;
-		m_viscosity = 4.5f;
-		m_support = 0.175f;
+		m_viscosity = 3.5f;
+		m_support = 0.1f;
 		m_surfaceTension = 0.07f;
 	}
 };
