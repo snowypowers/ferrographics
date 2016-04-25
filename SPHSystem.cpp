@@ -2,18 +2,19 @@
 
 SPHSystem::SPHSystem() :ParticleSystem(){
 	srand (0);
-	m = new Water(1000.0, 0.04, 2000, 0.05); 
-	m_numParticles = 2000;
+	m_numParticles = 500;
+	m = new Water(1000.0, 0.01, m_numParticles, 0.05); 
+	
 	/*for (int i=0;i<500;i++) {
 		//m_vVecState.push_back(Vector3f(i/250.0, Weights::vis(Vector3f(i/250.0),1),0.0));
 		//m_vVecState.push_back(Vector3f());
 		//m_vVecState.push_back(Vector3f((float)( rand() % 10000)/10000.0,(float)(rand() % 10000)/10000.0, (float)(rand() % 10000)/10000.0));
 		//m_vVecState.push_back(Vector3f((float)(rand()%100)/100 , (float)(rand()%100)/100  , (float)(rand()%100)/100 ));
 	}*/
-	for (int i=0;i<20;i++) {
-		for (int j=0;j<10;j++) {
+	for (int i=0;i<10;i++) {
+		for (int j=0;j<5;j++) {
 			for (int k=0;k<10;k++) {
-				m_vVecState.push_back(Vector3f(i/40.0, j/20.0, k/20.0));
+				m_vVecState.push_back(Vector3f(i/10.0, j/10.0, k/10.0));
 				//m_vVecState.push_back(Vector3f());
 				m_vVecState.push_back(Vector3f((float)( rand() % 100)/1000.0, -(float)( rand() % 100)/1000.0, (float)( rand() % 100)/1000.0));
 			}
