@@ -39,6 +39,7 @@ void Box::initTable(float cellSize) {
 	m_tableLength = floor(m_side / cellSize);
 	int tableSize = pow(floor(m_side / cellSize), 3);
 	table = new HashNode* [tableSize] ();
+	printf("Table Size: %d", tableSize);
 };
 
 void Box::insert(vector<Vector3f> &points) {
@@ -56,24 +57,34 @@ int Box::hash(Vector3f p) {
 	return floor(p[0]/m_cellSize) + floor(p[1]/m_cellSize) * m_tableLength + floor(p[2]/m_cellSize) * m_tableLength * m_tableLength;
 };
 
+int Box::hash(int i1, int i2, int i3) {
+	int limit = m_tableLength - 1;
+	int i = min((int)floor(i1/m_cellSize), limit);
+	int j = min((int)floor(i2/m_cellSize), limit);
+	int k = min((int)floor(i3/m_cellSize), limit);
+	return  i + j * m_tableLength + k * m_tableLength * m_tableLength;
+};
+
+
 vector<int> Box::findNeighbours(Vector3f pos) {
 	int r [3] = {floor(pos[0]/m_cellSize), floor(pos[1]/m_cellSize), floor(pos[2]/m_cellSize)};
 	vector<int> results = vector<int>();
-	for (int i=r[0]-1;i<=r[0]+1;++i) {
-		for (int j=r[1]-1;j<=r[1]+1;++j) {
-			for (int k=r[2]-1;k<=r[2]+1;++k) {
-				printf("Hashing: %d %d %d\n", i, j, k);
-				int key = max(i,0) + max(j,0) * m_tableLength + max(k,0) * m_tableLength * m_tableLength;
+	int limit = m_tableLength - 1;
+	for (int i=-1;i<=1;++i) {
+		for (int j=-1;j<=1;++j) {
+			for (int k=-1;k<=1;++k) {
+				int i1 = max(0, min(i+r[0], limit));
+				int i2 = max(0, min(j+r[1], limit));
+				int i3 = max(0, min(k+r[2], limit));
+				//printf("Hashing: %d %d %d\n", i+r[0], j+r[1], k+r[2]);
+				int key = i1 + i2 * m_tableLength + i3 * m_tableLength * m_tableLength;
+				//printf("find hash value %d\n", key);
 				if (key < 0) {continue;}
-				printf("find hash value %d\n", key);
+				
 				HashNode* n = table[key];
 				while (n != NULL) {
 					int v = n->getValue();
-					//printf(" %d ", v);
-					if (std::find(results.begin(), results.end(), v) == results.end()) {
-						//printf("Pushing, ");
-						results.push_back(v);
-					}
+					results.push_back(v);
 					n= n->getNext();
 				}
 			}

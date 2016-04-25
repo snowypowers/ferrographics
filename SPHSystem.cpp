@@ -2,8 +2,9 @@
 
 SPHSystem::SPHSystem() :ParticleSystem(){
 	srand (0);
-	m = new Water(1000.0, 0.04, 2000, 0.05); 
 	m_numParticles = 2000;
+	m = new Water(1000.0, 0.04, m_numParticles, 0.05); 
+
 	/*for (int i=0;i<500;i++) {
 		//m_vVecState.push_back(Vector3f(i/250.0, Weights::vis(Vector3f(i/250.0),1),0.0));
 		//m_vVecState.push_back(Vector3f());
@@ -12,10 +13,10 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 	}*/
 	//hash = new SpatialHash(100, m->getH());
 
-	for (int i=0;i<20;i++) {
-		for (int j=0;j<10;j++) {
+	for (int i=0;i<10;i++) {
+		for (int j=0;j<20;j++) {
 			for (int k=0;k<10;k++) {
-				m_vVecState.push_back(Vector3f(i/40.0, j/20.0, k/20.0));
+				m_vVecState.push_back(Vector3f(i/20.0, j/40.0, k/20.0));
 				//hash->hash(Vector3f(i/40.0, j/20.0, k/20.0));
 				//m_vVecState.push_back(Vector3f());
 				m_vVecState.push_back(Vector3f((float)( rand() % 100)/1000.0, -(float)( rand() % 100)/1000.0, (float)( rand() % 100)/1000.0));
@@ -164,7 +165,7 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		Vector3f magneticForce = Vector3f();
 		Vector3f pos = state[i*2];
 		if(this->getForceSphere()->intersect(pos)){
-			magneticForce+=this->getForceSphere()->polarize(pos);
+			//magneticForce+=this->getForceSphere()->polarize(pos);
 		}
 		//Push in velocity
 		output.push_back(state[i*2 + 1]);

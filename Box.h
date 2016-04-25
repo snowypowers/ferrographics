@@ -47,6 +47,8 @@ public:
 	void insert(vector<Vector3f> &points);
 
 	int hash(Vector3f p);
+	
+	int hash(int i1, int i2, int i3);
 
 	void clear();
 

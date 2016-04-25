@@ -26,7 +26,6 @@ namespace
 {
 
     SPHSystem * system;
-	//use RK4 as integrator
     TimeStepper * timeStepper = new ForwardEuler();
 	float h = 0.005f;
 	bool pause = true;
@@ -48,7 +47,6 @@ namespace
     //const float h = 0.04f;
     if(timeStepper!=0 && !pause){
       timeStepper->takeStep(system,h);
-	  timeStepper->takeStep(system,0.001);
     }
   }
 
