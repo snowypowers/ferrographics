@@ -10,10 +10,13 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 		//m_vVecState.push_back(Vector3f((float)( rand() % 10000)/10000.0,(float)(rand() % 10000)/10000.0, (float)(rand() % 10000)/10000.0));
 		//m_vVecState.push_back(Vector3f((float)(rand()%100)/100 , (float)(rand()%100)/100  , (float)(rand()%100)/100 ));
 	}*/
+	//hash = new SpatialHash(100, m->getH());
+
 	for (int i=0;i<20;i++) {
 		for (int j=0;j<10;j++) {
 			for (int k=0;k<10;k++) {
 				m_vVecState.push_back(Vector3f(i/40.0, j/20.0, k/20.0));
+				//hash->hash(Vector3f(i/40.0, j/20.0, k/20.0));
 				//m_vVecState.push_back(Vector3f());
 				m_vVecState.push_back(Vector3f((float)( rand() % 100)/1000.0, -(float)( rand() % 100)/1000.0, (float)( rand() % 100)/1000.0));
 			}
@@ -21,8 +24,9 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 	}
 	printf("Properties: \nMass %f\n", m->getMass());
 	printf("Support: %f\n", m->getSupport());
-	hash = new SpatialHash(100, m->getH());
+	
 	box = Box(0.5, Vector3f(0.25,0.25,0.25), Vector3f(0,1,0), true);
+	box.initTable(m->getH());
 	fsphere = ForceSphere(Vector3f(0,0,0),0.5, 0.2,3);
 	
 	//Intialise Bins, Cell Size = h*2
@@ -41,6 +45,7 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 SPHSystem::SPHSystem(Material* mat, int numParticles, bool empty):ParticleSystem() {
 	m = mat;
 	m_numParticles = numParticles;
+	hash = new SpatialHash(numParticles, 0.01);
 	if (!empty) {
 		for (int i=0;i<(m_numParticles*2);i++) {
 			if (i%2 == 0) {
@@ -50,7 +55,7 @@ SPHSystem::SPHSystem(Material* mat, int numParticles, bool empty):ParticleSystem
 			}
 		}
 	}
-	hash = new SpatialHash(numParticles, 0.01);
+
 	//Create box boundary
 	box = Box();
 	fsphere = ForceSphere();
@@ -64,12 +69,11 @@ void SPHSystem::addParticle(Vector3f pos, Vector3f velo) {
 vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 	//printf("Start eval\n");
 	int p, i;//Counter
-	hash->clear();
+	box.clear();
 	vector<Vector3f> output = vector<Vector3f>();
 	//printf("Cleared Hash\n");
 	//Insert all particles into hash
-	//hash->insert(state);
-	//hash->overview();
+	box.insert(state);
 	//printf("Inserted Hash\n");
 
 	vector<vector<int>> neighboursArray = vector<vector<int>> ();
@@ -84,8 +88,8 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		pressure = 0;
 		//find all possible neighbours
 			//printf("Find neighbours  ");
-		//neighbours = hash->findNeighbours(state[i*2], m->getH());
-
+		neighbours = box.findNeighbours(state[i*2]);
+		/*
 		neighbours = vector<int>();
 		for (int j=0;j<m_numParticles;++j) {
 			//printf("%d %d\n",i,j);
@@ -94,7 +98,8 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 				//printf("Neighbour dist: %f\n", (state[i*2] - state[j*2]).abs());
 				neighbours.push_back(j);
 			}
-		}
+		}*/
+
 			//printf("No. of neighbours: %d  ", neighbours.size());
 		for (int j=0;j<neighbours.size();j++) {
 			//printf("get particle %d %d \n ",neighbours[j]*2, j);

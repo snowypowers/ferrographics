@@ -1,6 +1,7 @@
 #ifndef BOX_H
 #define BOX_H
 
+#include <algorithm>
 #include <vecmath.h>
 #include<vector>
 #include "HashNode.h"
@@ -41,6 +42,16 @@ public:
 
 	void getPoints(float x[]);
 
+	void initTable(float cellSize);
+
+	void insert(vector<Vector3f> &points);
+
+	int hash(Vector3f p);
+
+	void clear();
+
+	vector<int> findNeighbours(Vector3f pos);
+
 
 protected:
 	vector<Vector3f> m_points;
@@ -48,6 +59,9 @@ protected:
 	Vector3f m_c;
 	Vector3f m_up;
 	bool m_covered;
+	float m_cellSize;
+	int m_tableLength;
+	HashNode ** table;
 
 	void drawQuad(Vector3f a, Vector3f b, Vector3f c, Vector3f d);
 

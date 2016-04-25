@@ -86,4 +86,15 @@ public:
 	}
 };
 
+class Ferro: public Material {
+public:
+	Ferro(float density, float vol, int particles, float h):Material(density, vol, particles, h) {
+		m_restPressure = 1000.0f;
+		m_k = 5.0f;
+		m_viscosity = 20.0f;
+		m_support = 0.1f;
+		m_surfaceTension = 6.0f;
+	}
+};
+
 #endif

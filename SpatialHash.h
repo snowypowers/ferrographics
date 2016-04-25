@@ -48,10 +48,19 @@ public:
 
 	 int hash(Vector3f &pos) {
 		vector<int> r = rhat(pos);
+		
 		int result = ( ( (r[0] * P1) ^ (r[1] * P2) ^ (r[2] * P3)) )% m_size;
+		//printf("%d %d %d: %d\n", r[0], r[1], r[2], result);
 		if (result < 0) {printf("ERROR: %d NEGATIVE KEY!!!\n", result);}
 		if (result >= m_size) {printf("ERROR: OUT OF BOUNDS!!!\n");}
 		return result;
+	 };
+
+	 int hash(int i, int j, int k) {
+		 int r0 = floor(i / m_cellSize);
+		 int r1 = floor(j / m_cellSize);
+		 int r2 = floor(k / m_cellSize);
+		 return ( ( (r0 * P1) ^ (r1 * P2) ^ (r2 * P3)) )% m_size;
 	 };
 
 	//Takes in the particle index and position
@@ -132,8 +141,8 @@ public:
 		for (int i=r[0]-1;i<=r[0]+1;++i) {
 			for (int j=r[1]-1;j<=r[1]+1;++j) {
 				for (int k=r[2]-1;k<=r[2]+1;++k) {
-					//printf("Hashing: %d %d %d\n", i, j, k);
-					int key = hash(Vector3f(i,j,k));
+					printf("Hashing: %d %d %d\n", i, j, k);
+					int key = hash(Vector3f(i,j,k));//Clamp to positive values
 					if (key < 0) {continue;}
 					if (key >= m_size) {printf("ERROR: OUT OF BOUNDS %d", key);}
 					//printf("find hash value %d ", key);
