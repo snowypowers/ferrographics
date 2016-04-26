@@ -8,14 +8,15 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 		for (int j=0;j<10;j++) {
 			for (int k=0;k<10;k++) {
 				m_vVecState.push_back(Vector3f(i/40.0, j/20.0, k/20.0));
-				//m_vVecState.push_back(Vector3f());
 				m_vVecState.push_back(Vector3f((float)( rand() % 100)/1000.0, -(float)( rand() % 100)/1000.0, (float)( rand() % 100)/1000.0));
 			}
 		}
 	}
 	printf("Properties: \nMass %f\n", m->getMass());
 	printf("Support: %f\n", m->getSupport());
-	hash = new SpatialHash(100, m->getH());
+	printf("Particles: %d\n", m_numParticles);
+	printf("StateSize: %d\n", m_vVecState.size());
+	hash = new SpatialHash(1000, m->getH());
 	box = Box(0.5, Vector3f(0.25,0.25,0.25), Vector3f(0,1,0), true);
 	fsphere = ForceSphere(Vector3f(0.25,0,0.25),0.25, 5000000.0 ,3);
 	
@@ -59,15 +60,19 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 	int p, i;//Counter
 	hash->clear();
 	vector<Vector3f> output = vector<Vector3f>();
+	output.resize(m_numParticles*2);
 	//printf("Cleared Hash\n");
 	//Insert all particles into hash
-	//hash->insert(state);
+	hash->insert(state);
 	//hash->overview();
 	//printf("Inserted Hash\n");
 
 	vector<vector<int>> neighboursArray = vector<vector<int>> ();
+	neighboursArray.resize(m_numParticles);
 	vector<float> mass_densityArray = vector<float>();
+	mass_densityArray.resize(m_numParticles);
 	vector<float> pressureArray = vector<float>();
+	pressureArray.resize(m_numParticles);
 	vector<int> neighbours;
 	float mass_density, pressure;
 	//Calculate density and pressure for each particle
@@ -75,6 +80,9 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		mass_density = m->getMass() * Weights::default(Vector3f(),m->getH());
 		pressure = 0;
 		//find all possible neighbours
+		neighbours = hash->findNeighbours(state[i*2]);
+
+		/*
 		neighbours = vector<int>();
 		for (int j=0;j<m_numParticles;++j) {
 			//printf("%d %d\n",i,j);
@@ -83,6 +91,8 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 				neighbours.push_back(j);
 			}
 		}
+
+		*/
 		for (int j=0;j<neighbours.size();j++) {
 			Vector3f pos = state[neighbours[j]*2];
 			//If neighbour particle is within H of particle i
@@ -95,9 +105,9 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		//Calculate pressure using rest pressure
 		pressure = m ->getK() * ( mass_density - m->getRestPressure());
 
-		neighboursArray.push_back(neighbours);
-		mass_densityArray.push_back(mass_density);
-		pressureArray.push_back(pressure);
+		neighboursArray[i] = neighbours;
+		mass_densityArray[i] = mass_density;
+		pressureArray[i] = pressure;
 	}
 
 	//Forces calculation
@@ -138,10 +148,10 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 			magneticForce+=this->getForceSphere()->polarize(pos);
 		}
 		//Push in velocity
-		output.push_back(state[i*2 + 1]);
+		output[i*2] = state[i*2 + 1];
 		//Sum up all forces and put into output
 		Vector3f finalForce = (surfaceTension + pressureForce + visForce + gravityForce + magneticForce) / mi;
-		output.push_back(finalForce);
+		output[i*2+1] = finalForce;
 	}
 	return output;
 

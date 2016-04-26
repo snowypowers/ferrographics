@@ -18,6 +18,7 @@ public:
 		m_cellSize = cellSize;
 		m_size = next_prime(num_particles * 2);
 		table = new HashNode* [m_size] ();
+		printf("Table Size: %d", m_size);
 	};
 
 	 ~SpatialHash() {
@@ -48,7 +49,12 @@ public:
 
 	 int hash(Vector3f &pos) {
 		vector<int> r = rhat(pos);
-		int result = ( ( (r[0] * P1) ^ (r[1] * P2) ^ (r[2] * P3)) )% m_size;
+		return hash(r[0], r[1], r[2]);
+	 };
+
+	 int hash(int i, int j, int k) {
+		if (i < 0 || j < 0 || k <0) {printf("NEGATIVE NUMBAS");}
+		int result = ( ( (i * P1) ^ (j * P2) ^ (k * P3)) )% m_size;
 		if (result < 0) {printf("ERROR: %d NEGATIVE KEY!!!\n", result);}
 		if (result >= m_size) {printf("ERROR: OUT OF BOUNDS!!!\n");}
 		return result;
@@ -125,17 +131,17 @@ public:
 	};
 
 
-	vector<int> findNeighbours(Vector3f pos, float h) {
+	vector<int> findNeighbours(Vector3f pos) {
 		vector<int> r = rhat(pos);
-		printf("RHAT: %d %d %d\n", r[0], r[1], r[2]);
+		//printf("RHAT: %d %d %d\n", r[0], r[1], r[2]);
 		vector<int> results = vector<int>();
 		for (int i=r[0]-1;i<=r[0]+1;++i) {
 			for (int j=r[1]-1;j<=r[1]+1;++j) {
 				for (int k=r[2]-1;k<=r[2]+1;++k) {
 					//printf("Hashing: %d %d %d\n", i, j, k);
-					int key = hash(Vector3f(i,j,k));
+					int key = hash(max(0,i),max(0,j),max(0,k));
 					if (key < 0) {continue;}
-					if (key >= m_size) {printf("ERROR: OUT OF BOUNDS %d", key);}
+					if (key >= m_size) {printf("ERROR: OUT OF BOUNDS %d", key); continue;}
 					//printf("find hash value %d ", key);
 					HashNode* n = table[key];
 					while (n != NULL) {
