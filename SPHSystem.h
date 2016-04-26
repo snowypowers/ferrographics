@@ -19,8 +19,9 @@ class SPHSystem: public ParticleSystem
 {
 public:
 	SPHSystem();
-	SPHSystem(Material* mat, int numParticles, bool empty);
+	SPHSystem(Material* mat, bool empty);
 	void addParticle(Vector3f pos, Vector3f velo);
+	void AddHundredParticles();
 	vector<Vector3f> evalF(vector<Vector3f> state);
 	void checkCollision();
 	void draw();

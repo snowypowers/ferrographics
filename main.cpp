@@ -18,6 +18,7 @@
 #include "TimeStepper.hpp"
 #include "SPHSystem.h"
 #include "Box.h"
+#include "Material.h"
 
 using namespace std;
 
@@ -32,12 +33,13 @@ namespace
 	bool pause = true;
 	bool boxDraw = false;
 	bool fSphereDraw = false;
+	Material* m = new Ferro(1000);
   // initialize particle system
   void initSystem()
   {
     // seed the random number generator with the current time
     srand( time( NULL ) );
-	system = new SPHSystem();
+	system = new SPHSystem(m, true);
   }
 
   // Take a step forward for the particle shower
@@ -109,6 +111,9 @@ namespace
     {
         switch ( key )
         {
+		case 'a':
+			system->AddHundredParticles();
+			break;
         case 'y': // UP
             //printf("UP");
 			system->getForceSphere()->move(Vector3f(0,0.01,0));

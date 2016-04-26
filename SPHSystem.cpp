@@ -33,27 +33,41 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 
 
 
-SPHSystem::SPHSystem(Material* mat, int numParticles, bool empty):ParticleSystem() {
+SPHSystem::SPHSystem(Material* mat, bool empty):ParticleSystem() {
+	srand (0);
+	m_numParticles = 0;
 	m = mat;
-	m_numParticles = numParticles;
-	if (!empty) {
-		for (int i=0;i<(m_numParticles*2);i++) {
-			if (i%2 == 0) {
-				m_vVecState.push_back(Vector3f(i/100,i/100,i/100));
-			} else {
-				m_vVecState.push_back(Vector3f());
-			}
-		}
+	hash = new SpatialHash(m->getNumParticles(), m->getH());
+	box = Box(0.5, Vector3f(0.25,0.25,0.25), Vector3f(0,1,0), true);
+	fsphere = ForceSphere(Vector3f(0.25,0,0.25),0.25, 5000000.0 ,3);
+	
+	//Intialise Bins, Cell Size = h*2
+	float* points = new float[6];
+	box.getPoints(points);
+	cellsPerSide  =(int) ceil(box.getSide()/m->getH()*2);
+	bins = vector<vector<int>>();
+	for(int i=0; i<cellsPerSide*cellsPerSide*cellsPerSide;i++){
+		bins.push_back(vector<int>());
 	}
-	hash = new SpatialHash(numParticles, 0.01);
-	//Create box boundary
-	box = Box();
-	fsphere = ForceSphere();
 }
 
 void SPHSystem::addParticle(Vector3f pos, Vector3f velo) {
 	m_vVecState.push_back(pos);
 	m_vVecState.push_back(velo);
+};
+
+void SPHSystem::AddHundredParticles() {
+	//if (m_numParticles >= m->getNumParticles()) {return;}
+	float midy = box.getSide() / 2;
+	for (int i=0;i<5;i++) {
+		for (int j=0;j<5;j++) {
+			for (int k=0;k<5;k++) {
+				m_vVecState.push_back(Vector3f(i/20.0 + 0.125, j/20.0 + 0.125, k/20.0 + 0.125));
+				m_vVecState.push_back(Vector3f((float)( rand() % 100)/1000.0, -(float)( rand() % 100)/1000.0, (float)( rand() % 100)/1000.0));
+			}
+		}
+	}
+	m_numParticles += 125;
 };
 
 vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
@@ -204,12 +218,12 @@ void SPHSystem::draw() {
 		Vector3f vel = m_vVecState[i+1];
 		GLfloat col [] = {0.7, 0.7, 0.7, 1.0};
 		GLfloat col_in [] = {0.7, 0.7, 0.7, 1.0};
-		if (vel.abs() > 10) {col[0] += 0.7;}
+		//if (vel.abs() > 10) {col[0] += 0.7;}
 		//if (this->getForceSphere()->intersect(pos)) {col[1] += 0.7;}
-		if(this->getForceSphere()->intersect(pos)){
+		/*if(this->getForceSphere()->intersect(pos)){
 			Vector3f mag = this->getForceSphere()->polarize(pos);
 			if(mag.abs()>=8000.0){col[1] += 0.7;}	
-		}
+		}*/
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, col);
 		glPushMatrix();
 		glTranslatef(pos[0], pos[1], pos[2] );
