@@ -3,7 +3,7 @@
 SPHSystem::SPHSystem() :ParticleSystem(){
 	srand (0);
 	m_numParticles = 500;
-	m = new Water(1000.0, 0.04, m_numParticles, 0.05); 
+	m = new Water(m_numParticles); 
 	/*for (int i=0;i<500;i++) {
 		//m_vVecState.push_back(Vector3f(i/250.0, Weights::vis(Vector3f(i/250.0),1),0.0));
 		//m_vVecState.push_back(Vector3f());
