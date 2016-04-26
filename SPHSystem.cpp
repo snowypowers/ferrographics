@@ -2,28 +2,37 @@
 
 SPHSystem::SPHSystem() :ParticleSystem(){
 	srand (0);
-	m = new Water(1000.0, 0.04, 2000, 0.05); 
-	m_numParticles = 2000;
+	m_numParticles = 500;
+	m = new Water(1000.0, 0.04, m_numParticles, 0.05); 
 	/*for (int i=0;i<500;i++) {
 		//m_vVecState.push_back(Vector3f(i/250.0, Weights::vis(Vector3f(i/250.0),1),0.0));
 		//m_vVecState.push_back(Vector3f());
 		//m_vVecState.push_back(Vector3f((float)( rand() % 10000)/10000.0,(float)(rand() % 10000)/10000.0, (float)(rand() % 10000)/10000.0));
 		//m_vVecState.push_back(Vector3f((float)(rand()%100)/100 , (float)(rand()%100)/100  , (float)(rand()%100)/100 ));
 	}*/
-	for (int i=0;i<20;i++) {
+	for (int i=0;i<10;i++) {
 		for (int j=0;j<10;j++) {
-			for (int k=0;k<10;k++) {
+			for (int k=0;k<5;k++) {
 				m_vVecState.push_back(Vector3f(i/40.0, j/20.0, k/20.0));
 				//m_vVecState.push_back(Vector3f());
 				m_vVecState.push_back(Vector3f((float)( rand() % 100)/1000.0, -(float)( rand() % 100)/1000.0, (float)( rand() % 100)/1000.0));
 			}
 		}
 	}
+	//for (int i=0;i<10;i++) {
+	//	for (int j=0;j<10;j++) {
+	//		for (int k=0;k<5;k++) {
+	//			m_vVecState.push_back(Vector3f(i/100.0, j/50.0, k/50.0));
+	//			//m_vVecState.push_back(Vector3f());
+	//			m_vVecState.push_back(Vector3f((float)( rand() % 100)/1000.0, -(float)( rand() % 100)/1000.0, (float)( rand() % 100)/1000.0));
+	//		}
+	//	}
+	//}
 	printf("Properties: \nMass %f\n", m->getMass());
 	printf("Support: %f\n", m->getSupport());
 	hash = new SpatialHash(100, m->getH());
 	box = Box(0.5, Vector3f(0.25,0.25,0.25), Vector3f(0,1,0), true);
-	fsphere = ForceSphere(Vector3f(0,0,0),0.5, 0.2,3);
+	fsphere = ForceSphere(Vector3f(0.25,0,0.25),0.25, 500000.0 ,3);
 	
 	//Intialise Bins, Cell Size = h*2
 	float* points = new float[6];
@@ -165,15 +174,15 @@ vector<Vector3f> SPHSystem::evalF(vector<Vector3f> state) {
 		output.push_back(state[i*2 + 1]);
 		//Sum up all forces and put into output
 		Vector3f finalForce = (surfaceTension + pressureForce + visForce + gravityForce + magneticForce) / mi;
-		/*printf("%d: neighbours: %d\n", i, neighbours.size());
-		state[i*2].print();
-		state[i*2 +1].print();
-		printf("FORCES:\n");
-		visForce.print();
-		pressureForce.print();
-		gravityForce.print();
-		magneticForce.print();
-		finalForce.print();*/
+		//printf("%d: neighbours: %d\n", i, neighbours.size());
+		//state[i*2].print();
+		//state[i*2 +1].print();
+		//printf("FORCES:\n");
+		//visForce.print();
+		//pressureForce.print();
+		//gravityForce.print();
+		//magneticForce.print();
+		//finalForce.print();
 		output.push_back(finalForce);
 	}
 	return output;
@@ -228,7 +237,11 @@ void SPHSystem::draw() {
 		GLfloat col [] = {0.7, 0.7, 0.7, 1.0};
 		GLfloat col_in [] = {0.7, 0.7, 0.7, 1.0};
 		if (vel.abs() > 10) {col[0] += 0.7;}
-		if (this->getForceSphere()->intersect(pos)) {col[1] += 0.7;}
+		//if (this->getForceSphere()->intersect(pos)) {col[1] += 0.7;}
+		if(this->getForceSphere()->intersect(pos)){
+			Vector3f mag = this->getForceSphere()->polarize(pos);
+			if(mag.abs()>=8000.0){col[1] += 0.7;}	
+		}
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, col);
 		glPushMatrix();
 		glTranslatef(pos[0], pos[1], pos[2] );

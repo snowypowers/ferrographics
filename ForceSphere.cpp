@@ -50,29 +50,29 @@ bool ForceSphere::intersect(Vector3f point){
 }
 
 Vector3f ForceSphere::polarize(Vector3f position){
-	Vector3f dir = (position-this->m_center).normalized();
-	float r = (position-this->m_center).absSquared();
-
+	Vector3f diff = position-this->m_center;
+	if(diff.abs()==0){
+		printf("Im zero!\n");
+		return Vector3f();
+	}
+	Vector3f dir = diff.normalized();
+	float magnitdue = diff.absSquared();
 	if((dir.x()==0)||(dir.z()==0)){
-		return r*this->m_amplitude*dir; //Full magnetic force to form spike
+		//return r*this->m_amplitude*dir; //Full magnetic force to form spike
+		return Vector3f();
 	}
 
 	float theta = std::acos(Vector3f::dot(dir,Vector3f::UP)); //Angle in radians from normal
 	float phi = std::atan2(dir.x(),dir.z());	//Angle in radians from Z-axis
-
-	float t_weight = cos(theta*this->m_peaks);
-	float p_weight = cos(phi*this->m_peaks*4);
-
-	//printf("T weight = %f",t_weight);
-	//printf("P weight = %f",p_weight);
-
-	if (t_weight <0.1){
-		t_weight = 0.1;
-	}
-	if (p_weight <0.1){
-		p_weight = 0.1;
-	}
-	return (r * this->m_amplitude * t_weight * p_weight)*dir;
+	//printf("Position of particle:");
+	//position.print();
+	//printf("Theta = %f	Phi = %f\n",theta,phi);
+	float t_weight = (2.0-(1.0+cos(theta*4*this->m_peaks)))/2.0;
+	float p_weight = (2.0-(1.0+cos(phi*this->m_peaks*4)))/2.0;
+	//printf("T Weight = %f	P Weight = %f\n",t_weight,p_weight);
+	//Vector3f force =(this->m_amplitude *((exp(magnitdue)-1.0)/magnitdue )*(1-t_weight)*(1-p_weight))*-1*dir;
+	//force.print();
+	return (this->m_amplitude*((exp(magnitdue)-1.0)/this->m_radius )*p_weight*t_weight)*-1*dir;
 }
 
 void ForceSphere::move(Vector3f translate){

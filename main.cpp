@@ -48,7 +48,6 @@ namespace
     //const float h = 0.04f;
     if(timeStepper!=0 && !pause){
       timeStepper->takeStep(system,h);
-	  timeStepper->takeStep(system,0.001);
     }
   }
 
@@ -110,6 +109,30 @@ namespace
     {
         switch ( key )
         {
+        case 'y': // UP
+            //printf("UP");
+			system->getForceSphere()->move(Vector3f(0,0.01,0));
+            break;
+        case 'h': // DOWN
+            //printf("DOWN");
+			system->getForceSphere()->move(Vector3f(0,-0.01,0));
+            break;
+        case 'u': //LEFT
+            //printf("LEFT");
+			system->getForceSphere()->move(Vector3f(-0.01,0,0));
+            break;
+        case 'j': //RIGHT
+            //printf("RIGHT");
+			system->getForceSphere()->move(Vector3f(0.01,0,0));
+            break;
+        case 'i': //LEFT
+            //printf("LEFT");
+			system->getForceSphere()->move(Vector3f(0,0,0.01));
+            break;
+        case 'k': //RIGHT
+            //printf("RIGHT");
+			system->getForceSphere()->move(Vector3f(0,0,-0.01));
+            break;
 		case 'b':
 			if (boxDraw) {boxDraw = false;} else {boxDraw = true;}
 			break;
@@ -159,19 +182,19 @@ namespace
         {
         case 101: // UP
             //printf("UP");
-			system->getForceSphere()->move(Vector3f(0,0.1,0));
+			system->getForceSphere()->move(Vector3f(0,0.01,0));
             break;
         case 103: // DOWN
             //printf("DOWN");
-			system->getForceSphere()->move(Vector3f(0,-0.1,0));
+			system->getForceSphere()->move(Vector3f(0,-0.01,0));
             break;
         case 100: //LEFT
             //printf("LEFT");
-			system->getForceSphere()->move(Vector3f(-0.1,0,0));
+			system->getForceSphere()->move(Vector3f(-0.01,0,0));
             break;
         case 102: //LEFT
             //printf("RIGHT");
-			system->getForceSphere()->move(Vector3f(0.1,0,0));
+			system->getForceSphere()->move(Vector3f(0.01,0,0));
             break;
 		default:
             cout << "Unhandled key press " << key << "." << endl;
@@ -340,7 +363,7 @@ int main( int argc, char* argv[] )
 
     camera.SetDimensions( 600, 600 );
 
-    camera.SetDistance( 10 );
+    camera.SetDistance( 5 );
     camera.SetCenter( Vector3f::ZERO );
 
     glutCreateWindow("Ferro");
