@@ -48,7 +48,6 @@ namespace
     //const float h = 0.04f;
     if(timeStepper!=0 && !pause){
       timeStepper->takeStep(system,h);
-	  timeStepper->takeStep(system,0.001);
     }
   }
 
