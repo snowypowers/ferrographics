@@ -58,10 +58,9 @@ int Box::hash(Vector3f p) {
 };
 
 int Box::hash(int i1, int i2, int i3) {
-	int limit = m_tableLength - 1;
-	int i = min((int)floor(i1/m_cellSize), limit);
-	int j = min((int)floor(i2/m_cellSize), limit);
-	int k = min((int)floor(i3/m_cellSize), limit);
+	int i = (int)floor(i1/m_cellSize) % m_tableLength;
+	int j = (int)floor(i2/m_cellSize) % m_tableLength;
+	int k = (int)floor(i3/m_cellSize) % m_tableLength;
 	return  i + j * m_tableLength + k * m_tableLength * m_tableLength;
 };
 
@@ -73,9 +72,9 @@ vector<int> Box::findNeighbours(Vector3f pos) {
 	for (int i=-1;i<=1;++i) {
 		for (int j=-1;j<=1;++j) {
 			for (int k=-1;k<=1;++k) {
-				int i1 = max(0, min(i+r[0], limit));
-				int i2 = max(0, min(j+r[1], limit));
-				int i3 = max(0, min(k+r[2], limit));
+				int i1 = (i+r[0]) % m_tableLength;
+				int i2 = (j+r[1]) % m_tableLength;
+				int i3 = (k+r[2]) % m_tableLength;
 				//printf("Hashing: %d %d %d\n", i+r[0], j+r[1], k+r[2]);
 				int key = i1 + i2 * m_tableLength + i3 * m_tableLength * m_tableLength;
 				//printf("find hash value %d\n", key);
