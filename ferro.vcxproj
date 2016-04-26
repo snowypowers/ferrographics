@@ -78,6 +78,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="ForceSphere.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="marchingCubes.cpp" />
     <ClCompile Include="particleSystem.cpp" />
     <ClCompile Include="SPHSystem.cpp" />
     <ClCompile Include="spring.cpp" />
@@ -95,6 +96,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="ForceSphere.h" />
     <ClInclude Include="HashNode.h" />
+    <ClInclude Include="marchingCubes.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="particleSystem.h" />
     <ClInclude Include="SpatialHash.h" />

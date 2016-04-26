@@ -25,7 +25,7 @@ public:
 	vector<Vector3f> evalF(vector<Vector3f> state);
 	void checkCollision();
 	void draw();
-	
+	void toggleMarching() {if (marching) {marching = false;} else {marching = true;}}
 
 
 protected:
@@ -33,6 +33,8 @@ protected:
 	int cellsPerSide;
 	Material* m;
 	SpatialHash* hash;
+	bool marching;
+	float pointDensity(Vector3f& pt);
 
 
 };

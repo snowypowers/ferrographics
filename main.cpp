@@ -114,6 +114,9 @@ namespace
 		case 'a':
 			system->AddHundredParticles();
 			break;
+		case 'n':
+			system->toggleMarching();
+			break;
         case 'y': // UP
             //printf("UP");
 			system->getForceSphere()->move(Vector3f(0,0.01,0));

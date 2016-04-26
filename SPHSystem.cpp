@@ -1,4 +1,5 @@
 #include "SPHSystem.h"
+#include "marchingCubes.h"
 
 SPHSystem::SPHSystem() :ParticleSystem(){
 	srand (0);
@@ -12,11 +13,7 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 			}
 		}
 	}
-	printf("Properties: \nMass %f\n", m->getMass());
-	printf("Support: %f\n", m->getSupport());
-	printf("Particles: %d\n", m_numParticles);
-	printf("StateSize: %d\n", m_vVecState.size());
-	hash = new SpatialHash(1000, m->getH());
+	hash = new SpatialHash(m_numParticles, m->getH());
 	box = Box(0.5, Vector3f(0.25,0.25,0.25), Vector3f(0,1,0), true);
 	fsphere = ForceSphere(Vector3f(0.25,0,0.25),0.25, 5000000.0 ,3);
 	
@@ -212,6 +209,77 @@ void SPHSystem::checkCollision(){
 }
 
 void SPHSystem::draw() {
+	if (marching) {
+		hash->clear();
+		hash->insert(m_vVecState);
+		vector<TRIANGLE *> triangleArray = vector<TRIANGLE *>();
+		float side = box.getSide();
+		float gridSize = 0.02f;
+		float h = m->getH();
+		float isoLevel = 500.0f;
+		//Calculate all grids
+		//printf("LETS START GRIDDING\n");
+		for (float i=0;i<=side;i+=gridSize) {
+			for (float j=0;j<=side;j+=gridSize) {
+				for (float k=0;k<=side;k+=gridSize) {
+					GRIDCELL g;
+					Vector3f p0 = Vector3f(i,j,k);
+					g.p[0] = p0;
+					g.val[0] = pointDensity(p0);
+					//printf("%f", g.val[0]);
+					Vector3f p1 = Vector3f(i+gridSize,j,k);
+					g.p[1] = p1;
+					g.val[1] = pointDensity(p1);
+					//printf("%f", g.val[1]);
+					Vector3f p2 = Vector3f(i+gridSize,j,k+gridSize);
+					g.p[2] = p2;
+					g.val[2] = pointDensity(p2);
+					//printf("%f", g.val[2]);
+					Vector3f p3 = Vector3f(i,j,k+gridSize);
+					g.p[3] = p3;
+					g.val[3] = pointDensity(p3);
+					//printf("%f", g.val[3]);
+					Vector3f p4 = Vector3f(i,j+gridSize,k);
+					g.p[4] = p4;
+					g.val[4] = pointDensity(p4);
+					//printf("%f", g.val[4]);
+					Vector3f p5 = Vector3f(i+gridSize,j+gridSize,k);
+					g.p[5] = p5;
+					g.val[5] = pointDensity(p5);
+					//printf("%f", g.val[5]);
+					Vector3f p6 = Vector3f(i+gridSize,j+gridSize,k+gridSize);
+					g.p[6] = p6;
+					g.val[6] = pointDensity(p6);
+					//printf("%f", g.val[6]);
+					Vector3f p7 = Vector3f(i,j+gridSize,k+gridSize);
+					g.p[7] = p7;	
+					g.val[7] = pointDensity(p7);
+					//printf("%f", g.val[7]);
+					vector<TRIANGLE *> t = polygonise(g, isoLevel);
+					if (t.size() == 0) {continue;}
+					triangleArray.insert(triangleArray.end(),t.begin(),t.end());
+					//printf("DONE FOR %d %d %d\n", i,j,k);
+				}
+			}
+		}
+		//DRAW
+		//printf("START DRAW %d triangles\n", triangleArray.size());
+		glPushAttrib(GL_ALL_ATTRIB_BITS);
+        glDisable(GL_LIGHTING);
+		for (int i=0;i<triangleArray.size();i++) {
+			TRIANGLE * t = triangleArray[i];
+			glBegin(GL_TRIANGLES);
+			glColor3f(0.3f,0.3f,0.8f);
+			glVertex3f(t->p[0][0], t->p[0][1], t->p[0][2]);
+			glVertex3f(t->p[1][0], t->p[1][1], t->p[1][2]);
+			glVertex3f(t->p[2][0], t->p[2][1], t->p[2][2]);
+			glEnd();
+		}
+
+		glPopAttrib();
+		
+
+	} else {
 	float r = m->getRadius();
 	for (int i=0;i<m_vVecState.size();i+=2) {
 		Vector3f pos = m_vVecState[i];
@@ -220,15 +288,29 @@ void SPHSystem::draw() {
 		GLfloat col_in [] = {0.7, 0.7, 0.7, 1.0};
 		//if (vel.abs() > 10) {col[0] += 0.7;}
 		//if (this->getForceSphere()->intersect(pos)) {col[1] += 0.7;}
-		/*if(this->getForceSphere()->intersect(pos)){
+		if(this->getForceSphere()->intersect(pos)){
 			Vector3f mag = this->getForceSphere()->polarize(pos);
 			if(mag.abs()>=8000.0){col[1] += 0.7;}	
-		}*/
+		}
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, col);
 		glPushMatrix();
 		glTranslatef(pos[0], pos[1], pos[2] );
 		glutSolidSphere(r,5.0f,5.0f);
 		glPopMatrix();
 	}
+	}
+};
+
+float SPHSystem::pointDensity(Vector3f& pt) {
+	float h = m->getH();
+	float density = 0;
+	vector<int> neighbours = hash->findNeighbours(pt);
+	for (int i=0;i<neighbours.size();i++) {
+		Vector3f other  = m_vVecState[neighbours[i]*2];
+		if ((pt - other).absSquared() < h*h) {
+			density += m->getMass() * Weights::default((pt-other), h);
+		}
+	}
+	return density;
 };
 
