@@ -181,20 +181,19 @@ namespace
         switch ( key )
         {
         case 101: // UP
-            //printf("UP");
-			system->getForceSphere()->move(Vector3f(0,0.01,0));
+			system->getForceSphere()->setAmplitude(500.0);
+			printf("Amp: %f \n",system->getForceSphere()->getAmplitude());
             break;
         case 103: // DOWN
             //printf("DOWN");
-			system->getForceSphere()->move(Vector3f(0,-0.01,0));
+			system->getForceSphere()->setAmplitude(-500.0);
+			printf("Amp: %f \n",system->getForceSphere()->getAmplitude());
             break;
         case 100: //LEFT
             //printf("LEFT");
-			system->getForceSphere()->move(Vector3f(-0.01,0,0));
             break;
         case 102: //LEFT
             //printf("RIGHT");
-			system->getForceSphere()->move(Vector3f(0.01,0,0));
             break;
 		default:
             cout << "Unhandled key press " << key << "." << endl;

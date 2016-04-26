@@ -52,12 +52,12 @@ bool ForceSphere::intersect(Vector3f point){
 Vector3f ForceSphere::polarize(Vector3f position){
 	Vector3f diff = position-this->m_center;
 	if(diff.abs()==0){
-		printf("Im zero!\n");
+		//printf("Im zero!\n");
 		return Vector3f();
 	}
 	Vector3f dir = diff.normalized();
 	float magnitdue = diff.absSquared();
-	if((dir.x()==0)||(dir.z()==0)){
+	if((dir.x()==0)||(dir.z()==0)||(dir.y()==0)){
 		//return r*this->m_amplitude*dir; //Full magnetic force to form spike
 		return Vector3f();
 	}
@@ -86,4 +86,12 @@ bool ForceSphere::getSolid(){
 void ForceSphere::setSolid(bool s){
 	m_solid=s;
 	printf("%s", this->m_solid ? "solid" : "wire");
+}
+
+void ForceSphere::setAmplitude(float amplitude){
+	this->m_amplitude+=(amplitude);
+}
+
+float ForceSphere::getAmplitude(){
+	return this->m_amplitude;
 }

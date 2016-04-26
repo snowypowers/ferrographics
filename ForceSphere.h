@@ -37,6 +37,8 @@ public:
 	void move(Vector3f translate);
 	bool getSolid();
 	void setSolid(bool solid);
+	void setAmplitude(float amplitude);
+	float getAmplitude();
 	
 	
 protected:
