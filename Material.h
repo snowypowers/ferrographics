@@ -77,12 +77,23 @@ protected:
 
 class Water:public Material {
 public:
-	Water(float density, float vol, int particles, float h):Material(density, vol, particles, h) {
+	Water(int particles):Material(1000, 0.02/1000 * particles, particles, 0.05) {
 		m_restPressure = 1000.0f;
 		m_k = 3.5f;
 		m_viscosity = 3.5f;
 		m_support = 0.1f;
 		m_surfaceTension = 0.07f;
+	}
+};
+
+class Ferro: public Material {
+public:
+	Ferro( int particles):Material(1000, 0.02/1000 * particles, particles, 0.05) {
+		m_restPressure = 1000.0f;
+		m_k = 5.0f;
+		m_viscosity = 20.0f;
+		m_support = 0.1f;
+		m_surfaceTension = 6.0f;
 	}
 };
 
