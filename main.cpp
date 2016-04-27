@@ -114,13 +114,15 @@ namespace
 		case 'a':
 			system->AddHundredParticles();
 			break;
+		case 'b':
+			if (boxDraw) {boxDraw = false;} else {boxDraw = true;}
+			break;
 		case 'c':
 			system->clear();
 			break;
-        case 'y': // UP
-            //printf("UP");
-			system->getForceSphere()->move(Vector3f(0,0.01,0));
-            break;
+		case 'f':
+			if (fSphereDraw) {fSphereDraw= false;} else {fSphereDraw = true;}
+			break;
         case 'h': // DOWN
             //printf("DOWN");
 			system->getForceSphere()->move(Vector3f(0,-0.01,0));
@@ -141,12 +143,7 @@ namespace
             //printf("RIGHT");
 			system->getForceSphere()->move(Vector3f(0,0,-0.01));
             break;
-		case 'b':
-			if (boxDraw) {boxDraw = false;} else {boxDraw = true;}
-			break;
-		case 'f':
-			if (fSphereDraw) {fSphereDraw= false;} else {fSphereDraw = true;}
-			break;
+
 		case 'r':
 			resetSystem();
 			break;
@@ -165,6 +162,10 @@ namespace
 				system->mesh = true;
 			}
 			break;
+		case 'y': // UP
+            //printf("UP");
+			system->getForceSphere()->move(Vector3f(0,0.01,0));
+            break;
         case 27: // Escape key
             exit(0);
             break;
