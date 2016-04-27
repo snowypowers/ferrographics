@@ -39,7 +39,7 @@ namespace
   {
     // seed the random number generator with the current time
     srand( time( NULL ) );
-	system = new SPHSystem(m, true);
+	system = new SPHSystem(m, false);
   }
 
   // Take a step forward for the particle shower
@@ -113,6 +113,9 @@ namespace
         {
 		case 'a':
 			system->AddHundredParticles();
+			break;
+		case 'c':
+			system->clear();
 			break;
         case 'y': // UP
             //printf("UP");

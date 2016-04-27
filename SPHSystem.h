@@ -22,6 +22,7 @@ public:
 	SPHSystem(Material* mat, bool empty);
 	void addParticle(Vector3f pos, Vector3f velo);
 	void AddHundredParticles();
+	void clear();
 	vector<Vector3f> evalF(vector<Vector3f> state);
 	void checkCollision();
 	void draw();

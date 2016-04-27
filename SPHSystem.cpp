@@ -35,12 +35,25 @@ SPHSystem::SPHSystem() :ParticleSystem(){
 
 SPHSystem::SPHSystem(Material* mat, bool empty):ParticleSystem() {
 	srand (0);
-	m_numParticles = 0;
+	if (!empty) {
+		m_numParticles = 2000;
+		for (int i=0;i<20;i++) {
+			for (int j=0;j<10;j++) {
+				for (int k=0;k<10;k++) {
+					m_vVecState.push_back(Vector3f(i/40.0, j/20.0, k/20.0));
+					m_vVecState.push_back(Vector3f((float)( rand() % 100)/1000.0, -(float)( rand() % 100)/1000.0, (float)( rand() % 100)/1000.0));
+				}
+			}
+		}
+	} else {
+		m_numParticles = 0;
+		
+	}
 	m = mat;
 	hash = new SpatialHash(m->getNumParticles(), m->getH());
 	box = Box(0.5, Vector3f(0.25,0.25,0.25), Vector3f(0,1,0), true);
 	fsphere = ForceSphere(Vector3f(0.25,0,0.25),0.25, 5000000.0 ,3);
-	
+
 	//Intialise Bins, Cell Size = h*2
 	float* points = new float[6];
 	box.getPoints(points);
@@ -49,11 +62,16 @@ SPHSystem::SPHSystem(Material* mat, bool empty):ParticleSystem() {
 	for(int i=0; i<cellsPerSide*cellsPerSide*cellsPerSide;i++){
 		bins.push_back(vector<int>());
 	}
-}
+};
 
 void SPHSystem::addParticle(Vector3f pos, Vector3f velo) {
 	m_vVecState.push_back(pos);
 	m_vVecState.push_back(velo);
+};
+
+void SPHSystem::clear() {
+	m_vVecState.clear();
+	m_numParticles = 0;
 };
 
 void SPHSystem::AddHundredParticles() {
